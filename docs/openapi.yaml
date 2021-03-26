@@ -1,2 +1,22 @@
-# TODO: fill this in
+openapi: 3.0.0
+info:
+  title: Melody Match REST API
+  version: 0.0.1
+
+paths:
+  /api/v1/session:
+    post:
+      summary: Creates a new session for the given user
+      responses:
+        '200':
+          description: API auth token on successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - token
+                properties:
+                  token:
+                    type: string
 
