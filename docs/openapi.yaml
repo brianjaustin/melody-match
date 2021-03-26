@@ -1,3 +1,4 @@
+# Recommended viewer: https://editor.swagger.io/
 openapi: 3.0.0
 info:
   title: Melody Match REST API
@@ -7,6 +8,14 @@ paths:
   /api/v1/session:
     post:
       summary: Creates a new session for the given user
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
           description: API auth token on successful login
@@ -19,4 +28,139 @@ paths:
                 properties:
                   token:
                     type: string
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/users:
+    post:
+      summary: Creates a new user
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '422':
+          description: Invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataErrors'
+    patch:
+      summary: Update a user
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '422':
+          description: Invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataErrors'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+
+components:
+  schemas:
+    Unauthorized:
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+            enum: ["Unauthorized"]
+    DataErrors:
+      properties:
+        errors:
+          type: object
+          properties:
+            fieldName:
+              type: array
+              items:
+                type: string
+    LoginRequest:
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        location:
+          type: string
+    CreateUser:
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+    EditUser:
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+    UserDetails:
+      properties:
+        data:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            id:
+              type: integer
+            name:
+              type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
