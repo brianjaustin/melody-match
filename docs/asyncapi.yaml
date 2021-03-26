@@ -1,2 +1,61 @@
-# TODO: fill this in
+# Recommended editor/previewer: https://playground.asyncapi.io/
+asyncapi: "2.0.0"
+info:
+  title: Melody Match Websocket API
+  version: 0.0.1
+
+channels:
+  matchmaker:{userToken}:
+    description: Channel for a user with another prior to chat. One channel per user.
+    parameters:
+      userToken:
+        description: The user's JWT authentication token
+        schema:
+          type: string
+    publish:
+      description: Match for user has been found
+      message:
+        $ref: '#/components/messages/MatchFound'
+  chat:{matchId}:
+    description: Channel for chatting with another user
+    parameters:
+      matchId:
+        description: ID of the match for chatting. Obtained using the matchmaker channel.
+        schema:
+         type: integer
+    publish:
+      description: Send a chat message
+      message:
+        $ref: '#/components/messages/ChatMessage'
+    subscribe:
+      description: Receive a chat message
+      message:
+        $ref: '#/components/messages/ChatMessage'
+
+components:
+  messages:
+    MatchFound:
+      name: matchFound
+      title: Match Found
+      description: Indicates a match was found
+      payload:
+        type: object
+        required:
+          - matchId
+        properties:
+          matchId:
+            type: integer
+    ChatMessage:
+      name: chatMessage
+      title: Chat Message
+      payload:
+        type: object
+        required:
+          - message
+        properties:
+          message:
+            type: string
+          # Sender will only be populated on receive from the channel
+          sender:
+            type: string
 
