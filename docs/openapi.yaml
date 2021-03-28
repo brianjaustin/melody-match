@@ -61,7 +61,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataErrors'
+  /api/v1/users/{userId}:
     patch:
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
       summary: Update a user
       tags:
         - users
@@ -144,8 +152,6 @@ components:
           format: email
         password:
           type: string
-        location:
-          type: string
     CreateUser:
       required:
         - email
@@ -158,8 +164,6 @@ components:
         password:
           type: string
         name:
-          type: string
-        location:
           type: string
     EditUser:
       properties:
