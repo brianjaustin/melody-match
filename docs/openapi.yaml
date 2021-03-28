@@ -25,9 +25,12 @@ paths:
                 type: object
                 required:
                   - token
+                  - user_id
                 properties:
                   token:
                     type: string
+                  user_id:
+                    type: integer
         '401':
           description: Invalid email or password
           content:
@@ -83,6 +86,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataErrors'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/users/spotify_token:
+    post:
+      summary: Save spotify tokens via authentication code
+      tags:
+        - users
+        - spotify
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateToken'
+      responses:
+        '204':
+          description: Token saved successfully
         '401':
           description: Unauthorized
           content:
@@ -158,9 +184,14 @@ components:
               type: integer
             name:
               type: string
+    CreateToken:
+      required:
+        - auth_code
+      properties:
+        auth_code:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
