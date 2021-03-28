@@ -5,11 +5,11 @@ info:
   version: 0.0.1
 
 channels:
-  matchmaker:{userToken}:
+  matchmaker:{userId}:
     description: Channel for a user with another prior to chat. One channel per user.
     parameters:
-      userToken:
-        description: The user's JWT authentication token
+      userId:
+        description: The user's ID
         schema:
           type: string
     publish:
@@ -26,14 +26,25 @@ channels:
     publish:
       description: Send a chat message
       message:
-        $ref: '#/components/messages/ChatMessage'
+        $ref: '#/components/messages/SendChatMessage'
     subscribe:
       description: Receive a chat message
       message:
-        $ref: '#/components/messages/ChatMessage'
+        $ref: '#/components/messages/ReceiveChatMessage'
 
 components:
   messages:
+    ReadyForMatch:
+      name: readyForMatch
+      title: Ready for Match
+      description: Sent when a user joins their matchmaker channel
+      payload:
+        type: object
+        required:
+          - token
+        properties:
+          token:
+            type: string
     MatchFound:
       name: matchFound
       title: Match Found
@@ -45,17 +56,30 @@ components:
         properties:
           matchId:
             type: integer
-    ChatMessage:
-      name: chatMessage
-      title: Chat Message
+    SendChatMessage:
+      name: sendChatMessage
+      title: Send Chat Message
       payload:
         type: object
         required:
           - message
+          - token
         properties:
           message:
             type: string
-          # Sender will only be populated on receive from the channel
+          token:
+            type: string
+    ReceiveChatMessage:
+      name: receiveChatMessage
+      title: Receive Chat Message
+      payload:
+        type: object
+        required:
+          - sender
+          - message
+        properties:
+          message:
+            type: string
           sender:
             type: string
 
