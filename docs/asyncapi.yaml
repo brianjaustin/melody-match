@@ -12,6 +12,10 @@ channels:
         description: The user's ID
         schema:
           type: string
+    subscribe:
+      description: Indicates a user is ready for match
+      message:
+        $ref: '#/components/messages/ReadyForMatch'
     publish:
       description: Match for user has been found
       message:
