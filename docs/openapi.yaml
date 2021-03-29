@@ -1,2 +1,320 @@
-# TODO: fill this in
+# Recommended viewer: https://editor.swagger.io/
+openapi: 3.0.0
+info:
+  title: Melody Match REST API
+  version: 0.0.1
 
+paths:
+  /api/v1/session:
+    post:
+      summary: Creates a new session for the given user
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: API auth token on successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - token
+                  - user_id
+                properties:
+                  token:
+                    type: string
+                  user_id:
+                    type: integer
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/users:
+    post:
+      summary: Creates a new user
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '422':
+          description: Invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataErrors'
+  /api/v1/users/{userId}:
+    patch:
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      summary: Update a user
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '422':
+          description: Invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataErrors'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/users/spotify_token:
+    post:
+      summary: Save spotify tokens via authentication code
+      tags:
+        - users
+        - spotify
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateToken'
+      responses:
+        '204':
+          description: Token saved successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/users/{userId}/matches:
+    get:
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      summary: Get a user's matches
+      tags:
+        - matches
+        - users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/users/{userId}/top_songs:
+    get:
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      summary: Get a user's top songs from Spotify
+      tags:
+        - spotify
+        - users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Proxy method to Spotify
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tracks:
+                  type: array
+                  items:
+                    $ref: "https://raw.githubusercontent.com/APIs-guru/openapi-directory/master/APIs/spotify.com/v1/swagger.yaml#/definitions/track"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /api/v1/matches/{matchId}:
+    get:
+      parameters:
+        - in: path
+          name: matchId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      summary: Get a match's details
+      tags:
+        - matches
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchInfo'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+
+components:
+  schemas:
+    Unauthorized:
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+            enum: ["Unauthorized"]
+    DataErrors:
+      properties:
+        errors:
+          type: object
+          properties:
+            fieldName:
+              type: array
+              items:
+                type: string
+    LoginRequest:
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    CreateUser:
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+    EditUser:
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+    UserDetails:
+      properties:
+        data:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            id:
+              type: integer
+            name:
+              type: string
+    CreateToken:
+      required:
+        - auth_code
+      properties:
+        auth_code:
+          type: string
+    MatchInfo:
+      required:
+        - id
+        - users
+      properties:
+        id:
+          type: integer
+        users:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - email
+              - name
+            properties:
+              id:
+                type: integer
+              email:
+                type: string
+                format: email
+              name:
+                type: string
+    MatchList:
+      required:
+        - matches
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchInfo'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
