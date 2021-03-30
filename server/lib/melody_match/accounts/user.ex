@@ -14,6 +14,7 @@ defmodule MelodyMatch.Accounts.User do
   schema "users" do
     field :email, :string
     field :name, :string
+    field :last_location, :string
     field :password, :string, virtual: true, redact: true
     field :password_hash, :string, redact: true
 
@@ -23,7 +24,7 @@ defmodule MelodyMatch.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :email])
+    |> cast(attrs, [:name, :email, :last_location])
     |> validate_required([:name, :email])
     |> validate_email()
   end
