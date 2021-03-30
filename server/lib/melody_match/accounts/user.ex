@@ -11,12 +11,15 @@ defmodule MelodyMatch.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias MelodyMatch.Tracks.TopTrack
+
   schema "users" do
     field :email, :string
     field :name, :string
     field :last_location, :string
     field :password, :string, virtual: true, redact: true
     field :password_hash, :string, redact: true
+    has_one :top_track, TopTrack
 
     timestamps()
   end
