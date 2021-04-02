@@ -7,6 +7,10 @@
 # General application configuration
 use Mix.Config
 
+config :melody_match,
+  ecto_repos: [MelodyMatch.Repo],
+  default_matcher: MelodyMatch.Matchmaker.MatcherAny
+
 c_id =
   System.get_env("REACT_APP_CLIENT_ID") ||
     raise """
@@ -28,8 +32,7 @@ red_uri =
 config :melody_match, :spotify,
   client_id: c_id,
   client_secret: c_sec,
-  redirect_uri: red_uri,
-  ecto_repos: [MelodyMatch.Repo]
+  redirect_uri: red_uri
 
 # Configures the endpoint
 config :melody_match, MelodyMatchWeb.Endpoint,
