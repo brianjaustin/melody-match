@@ -17,6 +17,7 @@ defmodule MelodyMatch.Application do
       MelodyMatchWeb.Endpoint,
       # Start a worker by calling: MelodyMatch.Worker.start_link(arg)
       # {MelodyMatch.Worker, arg}
+      MelodyMatch.PoolBackupAgent,
       MelodyMatch.MatchmakerSupervisor
     ]
 

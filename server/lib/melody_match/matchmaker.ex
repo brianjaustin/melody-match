@@ -8,12 +8,18 @@ defmodule MelodyMatch.Matchmaker do
   config :melody_match,
     default_matcher: MelodyMatch.Matchmaker.MatcherAny
   ```
+
+  ## Attribution
+
+    The code in this module is based on lecture notes, see
+    https://github.com/NatTuck/scratch-2021-01/blob/master/4550/0219/hangman/lib/hangman/game_server.ex.
   """
 
   use GenServer
 
   alias MelodyMatch.Accounts
   alias MelodyMatch.MatchmakerSupervisor
+  alias MelodyMatch.PoolBackupAgent
 
   # Public interface
 
@@ -28,7 +34,7 @@ defmodule MelodyMatch.Matchmaker do
   end
 
   def start_link(name) do
-    pool = %{} # TODO : backup agent
+    pool = PoolBackupAgent.get(name) || %{}
     GenServer.start_link(__MODULE__, pool, name: reg(name))
   end
 
