@@ -8,7 +8,7 @@ defmodule MelodyMatch.Matchmaker.MatcherBase do
   @typedoc """
   Represents the parameters used to match a user. Includes the
   characteristics of their top track (song) and their last
-  recorded location.
+  recorded location (latitude/longitude).
   """
   @type matching_params :: %{
     acousticness: float,
@@ -16,12 +16,13 @@ defmodule MelodyMatch.Matchmaker.MatcherBase do
     energy: float,
     instrumentalness: float,
     liveness: float,
-    location: String.t,
     loudness: float,
     mode: float,
     speechiness: float,
     tempo: float,
     valence: float,
+    latitude: String.t,
+    longitude: String.t
   }
 
   @typedoc """
