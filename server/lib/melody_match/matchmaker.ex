@@ -55,6 +55,19 @@ defmodule MelodyMatch.Matchmaker do
     GenServer.call(reg(matchmaker_name), {:try_match, user_id})
   end
 
+  @doc """
+  Removes the given user from the matchmaking pool.
+
+  ## Arguments
+
+    - matchmaker_name: the matchmaker server instance to use
+    - user_id: ID of the user to remove
+  """
+  @spec remove_user(String.t, integer) :: term
+  def remove_user(matchmaker_name, user_id) do
+    GenServer.call(reg(matchmaker_name), {:remove_user, user_id})
+  end
+
   defp reg(name), do: {:via, Registry, {MelodyMatch.MatchmakerRegistry, name}}
 
   # Implementation
@@ -75,6 +88,10 @@ defmodule MelodyMatch.Matchmaker do
     else
       {:reply, nil, Map.put(pool, user_id, params)}
     end
+  end
+
+  def handle_call({:remove_user, user_id}, _from, pool) do
+    {:reply, nil, Map.delete(pool, user_id)}
   end
 
   defp get_matching_params(user_id) do
