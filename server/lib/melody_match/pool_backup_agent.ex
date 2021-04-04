@@ -54,7 +54,7 @@ defmodule MelodyMatch.PoolBackupAgent do
   ## Examples
 
     iex> MelodyMatch.PoolBackupAgent.start_link(nil)
-    iex> MelodyMatch.PoolBackupAgent.get("bar")
+    iex> MelodyMatch.PoolBackupAgent.get("baz")
     nil
 
     iex> MelodyMatch.PoolBackupAgent.start_link(nil)

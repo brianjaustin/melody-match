@@ -63,8 +63,10 @@ defmodule MelodyMatch.Matchmaker do
     # TODO : get matching parameters
     other_user_id = matcher().best_match(%{}, pool)
 
-    # TODO : send to channels
     if other_user_id do
+      # TODO: create match in db
+      send_match_found(user_id, nil)
+      send_match_found(other_user_id, nil)
       {:reply, other_user_id, Map.delete(pool, other_user_id)}
     else
       {:reply, nil, Map.put(pool, user_id, %{})}
@@ -72,4 +74,11 @@ defmodule MelodyMatch.Matchmaker do
   end
 
   defp matcher(), do: Application.get_env(:melody_match, :default_matcher)
+
+  defp send_match_found(user_id, match_id) do
+    MelodyMatchWeb.Endpoint.broadcast(
+      "matchmaker:#{user_id}",
+      "matchFound",
+      %{matchId: match_id})
+  end
 end
