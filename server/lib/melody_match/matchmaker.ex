@@ -20,6 +20,7 @@ defmodule MelodyMatch.Matchmaker do
   alias MelodyMatch.Accounts
   alias MelodyMatch.MatchmakerSupervisor
   alias MelodyMatch.PoolBackupAgent
+  alias MelodyMatch.Repo
 
   # Public interface
 
@@ -60,8 +61,8 @@ defmodule MelodyMatch.Matchmaker do
   def init(pool), do: {:ok, pool}
 
   def handle_call({:try_match, user_id}, _from, pool) do
-    # TODO : get matching parameters
-    other_user_id = matcher().best_match(%{}, pool)
+    params = get_matching_params(user_id)
+    other_user_id = matcher().best_match(params, pool)
 
     if other_user_id do
       # TODO: create match in db
@@ -69,7 +70,19 @@ defmodule MelodyMatch.Matchmaker do
       send_match_found(other_user_id, nil)
       {:reply, other_user_id, Map.delete(pool, other_user_id)}
     else
-      {:reply, nil, Map.put(pool, user_id, %{})}
+      {:reply, nil, Map.put(pool, user_id, params)}
+    end
+  end
+
+  defp get_matching_params(user_id) do
+    user = Accounts.get_user!(user_id)
+    |> Repo.preload(:top_track)
+
+    if user.top_track do
+      user.top_track
+      |> Enum.into(%{latitude: user.last_latitude, longitude: user.last_longitude})
+    else
+      %{latitude: user.last_latitude, longitude: user.last_longitude}
     end
   end
 

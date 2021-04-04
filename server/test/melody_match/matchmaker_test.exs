@@ -1,8 +1,9 @@
 defmodule MelodyMatch.MatchmakerTest do
-  use ExUnit.Case
+  use MelodyMatch.DataCase
 
   import Mox
 
+  alias MelodyMatch.Accounts
   alias MelodyMatch.Matchmaker
   alias MelodyMatch.Matchmaker.MatcherMock
 
@@ -18,26 +19,49 @@ defmodule MelodyMatch.MatchmakerTest do
 
   describe "matchmaker" do
     test "adds to empty pool if no match found" do
-      expect(MatcherMock, :best_match, fn _, %{} -> nil end)
-      expect(MatcherMock, :best_match, fn _, %{1 => %{}} -> nil end)
+      {:ok, user1} = %{email: "mt1@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
+      user1_id = user1.id
+      {:ok, user2} = %{email: "mt2@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
 
-      assert Matchmaker.try_match(@matchmaker_id, 1) == nil
-      assert Matchmaker.try_match(@matchmaker_id, 2) == nil
+      expect(MatcherMock, :best_match, fn _, %{} -> nil end)
+      expect(MatcherMock, :best_match, fn _, %{^user1_id => %{}} -> nil end)
+
+      assert Matchmaker.try_match(@matchmaker_id, user1_id) == nil
+      assert Matchmaker.try_match(@matchmaker_id, user2.id) == nil
     end
 
     test "adds to existing pool if no match found" do
-      expect(MatcherMock, :best_match, fn _, %{} -> nil end)
-      expect(MatcherMock, :best_match, fn _, %{1 => %{}} -> nil end)
-      expect(MatcherMock, :best_match, fn _, %{1 => %{}, 2 => %{}} -> nil end)
+      {:ok, user1} = %{email: "mt1@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
+      user1_id = user1.id
+      {:ok, user2} = %{email: "mt2@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
+      user2_id = user2.id
+      {:ok, user3} = %{email: "mt3@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
 
-      assert Matchmaker.try_match(@matchmaker_id, 1) == nil
-      assert Matchmaker.try_match(@matchmaker_id, 2) == nil
-      assert Matchmaker.try_match(@matchmaker_id, 3) == nil
+      expect(MatcherMock, :best_match, fn _, %{} -> nil end)
+      expect(MatcherMock, :best_match, fn _, %{^user1_id => %{}} -> nil end)
+      expect(MatcherMock, :best_match, fn _, %{^user1_id => %{}, ^user2_id => %{}} -> nil end)
+
+      assert Matchmaker.try_match(@matchmaker_id, user1_id) == nil
+      assert Matchmaker.try_match(@matchmaker_id, user2_id) == nil
+      assert Matchmaker.try_match(@matchmaker_id, user3.id) == nil
     end
 
     test "removes from pool if a match is found" do
+      {:ok, user1} = %{email: "mt1@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
+      user1_id = user1.id
+      {:ok, user2} = %{email: "mt2@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
+      {:ok, user3} = %{email: "mt3@example.com", name: "some name", password: "super_strong_pass1234"}
+      |> Accounts.create_user()
+
       expect(MatcherMock, :best_match, fn _, %{} -> nil end)
-      expect(MatcherMock, :best_match, fn _, %{1 => %{}} -> 1 end)
+      expect(MatcherMock, :best_match, fn _, %{^user1_id => %{}} -> user1_id end)
       expect(MatcherMock, :best_match, fn _, pool ->
         # Check that the pool is exactly empty (pattern match
         # won't do it)
@@ -45,9 +69,9 @@ defmodule MelodyMatch.MatchmakerTest do
         nil
       end)
 
-      assert Matchmaker.try_match(@matchmaker_id, 1) == nil
-      assert Matchmaker.try_match(@matchmaker_id, 2) == 1
-      assert Matchmaker.try_match(@matchmaker_id, 3) == nil
+      assert Matchmaker.try_match(@matchmaker_id, user1_id) == nil
+      assert Matchmaker.try_match(@matchmaker_id, user2.id) == user1_id
+      assert Matchmaker.try_match(@matchmaker_id, user3.id) == nil
     end
   end
 end
