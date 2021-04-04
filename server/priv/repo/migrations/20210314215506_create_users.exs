@@ -5,7 +5,8 @@ defmodule MelodyMatch.Repo.Migrations.CreateUsers do
     create table(:users) do
       add :name, :string, null: false
       add :email, :string, null: false
-      add :last_location, :string
+      add :last_latitude, :string
+      add :last_longitude, :string
       add :password_hash, :string, null: false
 
       timestamps()

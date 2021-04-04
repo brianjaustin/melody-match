@@ -16,7 +16,8 @@ defmodule MelodyMatch.Accounts.User do
   schema "users" do
     field :email, :string
     field :name, :string
-    field :last_location, :string
+    field :last_latitude, :string
+    field :last_longitude, :string
     field :password, :string, virtual: true, redact: true
     field :password_hash, :string, redact: true
     has_one :top_track, TopTrack
@@ -27,14 +28,14 @@ defmodule MelodyMatch.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :email, :last_location])
+    |> cast(attrs, [:name, :email, :last_latitude, :last_longitude])
     |> validate_required([:name, :email])
     |> validate_email()
   end
 
   def create_changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :email, :password])
+    |> cast(attrs, [:name, :email, :password, :last_latitude, :last_longitude])
     |> validate_required([:name, :email, :password])
     |> validate_email()
     |> validate_password(:password)
