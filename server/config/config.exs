@@ -7,30 +7,6 @@
 # General application configuration
 use Mix.Config
 
-c_id =
-  System.get_env("REACT_APP_CLIENT_ID") ||
-    raise """
-    environment variable REACT_APP_CLIENT_ID is missing.
-    """
-
-c_sec =
-  System.get_env("CLIENT_SECRET") ||
-  raise """
-  environment variable CLIENT_SECRET is missing.
-  """
-
-red_uri = 
-  System.get_env("REDIRECT_URI") ||
-  raise """
-  environment variable REDIRECT_URI is missing.
-  """
-
-config :melody_match, :spotify,
-  client_id: c_id,
-  client_secret: c_sec,
-  redirect_uri: red_uri,
-  ecto_repos: [MelodyMatch.Repo]
-
 # Configures the endpoint
 config :melody_match, MelodyMatchWeb.Endpoint,
   url: [host: "localhost"],
@@ -38,6 +14,8 @@ config :melody_match, MelodyMatchWeb.Endpoint,
   render_errors: [view: MelodyMatchWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: MelodyMatch.PubSub,
   live_view: [signing_salt: "8nDMjU4n"]
+
+config :melody_match, ecto_repos: [MelodyMatch.Repo]
 
 # Configures Argon2 hashing library (see
 # https://github.com/riverrun/comeonin/wiki/Choosing-the-password-hashing-library#argon2)

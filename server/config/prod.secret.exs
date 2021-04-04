@@ -23,6 +23,29 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+c_id =
+  System.get_env("SPOTIFY_CLIENT_ID") ||
+    raise """
+    environment variable SPOTIFY_CLIENT_ID is missing.
+    """
+
+c_sec =
+  System.get_env("SPOTIFY_CLIENT_SECRET") ||
+  raise """
+  environment variable SPOTIFY_CLIENT_SECRET is missing.
+  """
+
+red_uri = 
+  System.get_env("SPOTIFY_REDIRECT_URI") ||
+  raise """
+  environment variable SPOTIFY_REDIRECT_URI is missing.
+  """
+
+config :melody_match, :spotify,
+  client_id: c_id,
+  client_secret: c_sec,
+  redirect_uri: red_uri
+
 config :melody_match, MelodyMatchWeb.Endpoint,
   http: [
     port: String.to_integer(System.get_env("PORT") || "4000"),
