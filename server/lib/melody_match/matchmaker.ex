@@ -18,6 +18,7 @@ defmodule MelodyMatch.Matchmaker do
   use GenServer
 
   alias MelodyMatch.Accounts
+  alias MelodyMatch.Matches
   alias MelodyMatch.MatchmakerSupervisor
   alias MelodyMatch.PoolBackupAgent
   alias MelodyMatch.Repo
@@ -65,9 +66,11 @@ defmodule MelodyMatch.Matchmaker do
     other_user_id = matcher().best_match(params, pool)
 
     if other_user_id do
-      # TODO: create match in db
-      send_match_found(user_id, nil)
-      send_match_found(other_user_id, nil)
+      {:ok, match} = %{first_user_id: other_user_id, second_user_id: user_id}
+      |> Matches.create_match()
+      send_match_found(user_id, match.id)
+      send_match_found(other_user_id, match.id)
+
       {:reply, other_user_id, Map.delete(pool, other_user_id)}
     else
       {:reply, nil, Map.put(pool, user_id, params)}
