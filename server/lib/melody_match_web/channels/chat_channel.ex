@@ -35,6 +35,12 @@ defmodule MelodyMatchWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_in("chatUserLeft", _payload, socket) do
+    broadcast socket, "chatUserLeft", %{}
+    {:stop, :user_left, socket}
+  end
+
   # Add authorization logic here as required.
   defp authorized?(match_id, %{"token" => token}) do
     match = Matches.get_match!(match_id)

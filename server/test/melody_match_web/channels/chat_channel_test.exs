@@ -41,4 +41,15 @@ defmodule MelodyMatchWeb.ChatChannelTest do
     push(socket, "sendChatMessage", %{"token" => token, "message" => "hi there"})
     assert_broadcast "receiveChatMessage", %{sender: ^user_name, message: "hi there"}
   end
+
+  test "chatUserLeft broadcasts the event", %{user2: user2, match: match} do
+    token = Phoenix.Token.sign(MelodyMatchWeb.Endpoint, "user_id", user2.id)
+    {:ok, _, socket} = MelodyMatchWeb.UserSocket
+    |> socket()
+    |> subscribe_and_join(MelodyMatchWeb.ChatChannel,
+      "chat:#{match.id}", %{"token" => token})
+
+    push(socket, "chatUserLeft")
+    assert_broadcast "chatUserLeft", %{}
+  end
 end
