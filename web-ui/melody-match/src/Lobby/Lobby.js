@@ -2,7 +2,7 @@ import "./Lobby.scss";
 import { Row, Col, Container, Spinner } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 
-export function Lobby() {
+export default function Lobby() {
 
   return (
     <div className="Login">

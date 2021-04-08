@@ -2,7 +2,7 @@ import "./Login.scss";
 import { Form, Button, Container, Row, Col, InputGroup } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 
-export function Login() {
+export default function Login() {
   const [validated, setValidated] = useState(false);
   const handleSubmit = (event) => {
     console.log("testing submit")

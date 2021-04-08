@@ -1,6 +1,8 @@
 import { Socket } from "phoenix";
 
-let socket = new Socket("/socket", { params: { token: "" } });
+let socket = new Socket("ws://localhost:4000/socket", {
+  params: { token: "" },
+});
 socket.connect();
 
 let channel = null;
@@ -23,9 +25,16 @@ function state_update(st) {
     callback(st);
   }
 }
-
-export function ch_start(game_name, role) {
-  channel = socket.channel(`game:${game_name}`, role);
+export function ch_join_lobby(user_id, token) {
+  channel = socket.channel(`matchmaker:${user_id}`, token);
+  channel
+    .join()
+    .receive("ok", state_update)
+    .receive("error", (resp) => console.log("Unable to join", resp));
+  channel.on("view", state_update);
+}
+export function ch_start(match_id, token) {
+  channel = socket.channel(`chat:${match_id}`, token);
   channel
     .join()
     .receive("ok", state_update)

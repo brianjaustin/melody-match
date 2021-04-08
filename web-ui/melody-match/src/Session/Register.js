@@ -10,7 +10,7 @@ const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
 const scopes = ["user-top-read"];
 
 
-export function Register({spotify, submit}) {
+export default function Register({spotify, submit}) {
   const [validated, setValidated] = useState(false);
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")

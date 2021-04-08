@@ -3,15 +3,15 @@ import { Container} from "react-bootstrap";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
-import TrackList from "./Tracks/Tracks";
-import MatchList from "./Matches/List"
-import { useState, useEffect } from "react";
-import { Register } from "./Login/Register";
-import { Login } from "./Login/Login"
-import {Lobby} from "./Lobby/Lobby"
+import TrackList from "./Tracks/Tracks.js";
+import Register from "./Session/Register.js";
+import Login from "./Session/Login.js"
+import Lobby from "./Lobby/Lobby.js";
+import Chat from "./Lobby/Channel"
 import "bootstrap/dist/css/bootstrap.min.css";
 import Nav from "./Nav";
 import { fetch_tracks } from "./api";
+import { useState, useEffect } from "react";
 
 
 // Get the hash of the url
@@ -53,19 +53,19 @@ function App() {
   let body = (
     <Switch>
       <Route path="/" exact>
-        <Lobby />
+        <Chat />
       </Route>
       <Route path="/register" exact>
         <Register spotify={state.token} submit={console.log}></Register>
       </Route>
-      <Route path="/login" exact>
-        <Login />
-      </Route>
       <Route path="/tracks" exact>
         <TrackList />
       </Route>
+      <Route path="/login" exact>
+        <Login />
+      </Route>
       <Route path="/matches" exact>
-        <MatchList />
+        <p>Match List</p>
       </Route>
     </Switch>
   );
