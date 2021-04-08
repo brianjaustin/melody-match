@@ -1,9 +1,6 @@
 import { Socket } from "phoenix";
 
-let socket = new Socket("ws://localhost:4000/socket", {
-  params: { token: "" },
-});
-socket.connect();
+let socket = null;
 
 let channel = null;
 
@@ -26,6 +23,10 @@ function state_update(st) {
   }
 }
 export function ch_join_lobby(user_id, token) {
+  let socket = new Socket("ws://localhost:4000/socket", {
+    params: { token: "" },
+  });
+  socket.connect();
   channel = socket.channel(`matchmaker:${user_id}`, token);
   channel
     .join()

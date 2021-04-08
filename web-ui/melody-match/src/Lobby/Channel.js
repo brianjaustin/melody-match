@@ -8,11 +8,11 @@
  */
 
 import React, { useState, useEffect } from "react";
-import {Container, Row, Col, Spinner} from "react-bootstrap";
-import { ch_join, ch_push, ch_start } from "../socket";
+import { Container, Row, Col, Spinner, Button } from "react-bootstrap";
+import { ch_join, ch_join_lobby, ch_push, ch_start } from "../socket";
 import _ from "lodash";
 import { connect } from "react-redux";
-
+import { api_login } from "../api";
 
 function ErrorMessage({ msg }) {
   if (msg) {
@@ -26,8 +26,9 @@ function ErrorMessage({ msg }) {
   }
 }
 
-
 function Lobby() {
+
+
   return (
     <div className="Login">
       <Container>
@@ -41,6 +42,17 @@ function Lobby() {
             </Spinner>
           </Col>
         </Row>
+      </Container>
+    </div>
+  );
+}
+
+function PreLobby({submit}) {
+  return (
+    <div className="pre-lobby">
+      <Container>
+        <h4>Press the button to join the lobby and start finding matches.</h4>
+        <Button variant="primary" onClick={submit}>Find Matches</Button>
       </Container>
     </div>
   );
@@ -150,55 +162,29 @@ function ActiveChat({ reset, gameState, setGameState }) {
   );
 }
 
-function Chat({channel}) {
-  const [gameState, setGameState] = useState({
-    guesses: [],
-    participants: [],
-    previous_winners: [],
-    lobby: true,
-    error: "",
-    player_name: "",
-  });
+function Chat({ channel, session }) {
+  const [chatState, setChatState] = useState(0);
 
-  function setGameStateWOName(st) {
-    let new_state = Object.assign(st, { player_name: gameState.player_name });
-    setGameState(new_state);
+  // useEffect(() => ch_join(setGameStateWOName));
+
+  function enterLobby(){
+    setChatState(1);
+    ch_join_lobby(session.user_id, "fdsjak;vrf")
   }
 
-  function setName(name) {
-    let new_state = gameState;
-    new_state.player_name = name;
-    setGameState(new_state);
-  }
-
-  useEffect(() => ch_join(setGameStateWOName));
-
-  function addChatMember(match_id, token) {
-    ch_start(match_id, { token: token });
-  }
-
-
-  function reset() {
-    ch_push("reset", "");
-  }
-
-  if (gameState.lobby) {
-    return (
-      <Lobby />
-    );
+  if (chatState == 0) {
+    return <PreLobby submit={enterLobby}/>;
+  } else if (chatState == 1){
+    return <Lobby />
   } else {
     return (
-      <ActiveChat
-        reset={reset}
-        gameState={gameState}
-        setGameState={setGameState}
-      />
+      <Lobby />
     );
   }
 }
 
-function state2props({ channel }) {
-  return { channel };
+function state2props({ channel, session }) {
+  return { channel, session };
 }
 
 export default connect(state2props)(Chat);

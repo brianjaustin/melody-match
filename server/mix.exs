@@ -48,7 +48,8 @@ defmodule MelodyMatch.MixProject do
       {:argon2_elixir, "~> 2.4"},
       {:not_qwerty123, "~> 2.3"},
       {:httpoison, "~> 1.8"},
-      {:mox, "~> 1.0"}
+      {:mox, "~> 1.0"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 
