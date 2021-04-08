@@ -9,6 +9,20 @@ config :melody_match, MelodyMatch.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+c_id =
+  System.get_env("SPOTIFY_CLIENT_ID") || ""
+
+c_sec =
+  System.get_env("SPOTIFY_CLIENT_SECRET") || ""
+
+red_uri = 
+  System.get_env("SPOTIFY_REDIRECT_URI") || ""
+
+config :melody_match, :spotify,
+  client_id: c_id,
+  client_secret: c_sec,
+  redirect_uri: red_uri
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
