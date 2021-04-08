@@ -7,6 +7,7 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
   @behaviour MelodyMatch.Matchmaker.MatcherBase
 
   @minimum_diff 50
+  @max_location_meters 500_000
 
   @impl true
   def best_match(_user, pool) when map_size(pool) == 0, do: nil
@@ -14,6 +15,7 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
   @impl true
   def best_match(user, pool) do
     {other_id, _} = pool
+    |> Enum.filter(fn {_, traits} -> close_enough(user, traits) end)
     |> Enum.map(fn {id, traits} -> {id, traits_difference(user, traits)} end)
     |> Enum.filter(fn {_, diff} -> diff <= @minimum_diff end)
     |> Enum.min(fn {_, diff1}, {_, diff2} -> diff1 <= diff2 end, fn -> {nil, nil} end)
@@ -35,6 +37,30 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
       + instrumentalness_diff + liveness_diff + loudness_diff + speechiness_diff \
       + valence_diff + tempo_diff) / 9
 
-    abs(diff_raw) * 10000
+    abs(diff_raw) * 1000
+  end
+
+  defp close_enough(%{latitude: lat1, longitude: long1}, %{latitude: lat2, longitude: long2}) do
+    cond do
+      (lat1 == nil) || (long1 == nil) -> true
+      (lat2 == nil) || (long2 == nil) -> false
+      true -> close_enough(lat1, long1, lat2, long2)
+    end
+  end
+
+  defp close_enough(_, _), do: false
+
+  defp close_enough(lat1, long1, lat2, long2) do
+    with {lat1, _} <- Float.parse(lat1),
+         {long1, _} <- Float.parse(long1),
+         {lat2, _} <- Float.parse(lat2),
+         {long2, _} <- Float.parse(long2)
+    do
+      point1 = %{lat: lat1, lon: long1}
+      point2 = %{lat: lat2, lon: long2}
+      Geocalc.distance_between(point1, point2) <= @max_location_meters
+    else
+      _ -> false
+    end
   end
 end

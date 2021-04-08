@@ -137,6 +137,56 @@ defmodule MelodyMatch.MatchmakerTest do
       assert MatcherTopTrack.best_match(traits1, %{1 => traits1, 2 => traits2}) == 1
     end
 
+    test "returns best match within maximum distance" do
+      traits1 = %{
+        acousticness: 0.0,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        # London
+        latitude: "51.5286416",
+        longitude: "-0.1015987"
+      }
+      traits2 = %{
+        acousticness: 0.01,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        # Berlin
+        latitude: "52.5075419",
+        longitude: "13.4251364"
+      }
+      traits3 = %{
+        acousticness: 0.1,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        # Paris
+        latitude: "48.8588589",
+        longitude: "2.3475569"
+      }
+
+      assert MatcherTopTrack.best_match(traits1, %{1 => traits2, 2 => traits3}) == 2
+    end
+
     test "returns no match if minimum threshold not met" do
       traits1 = %{
         acousticness: 0.0,
@@ -153,7 +203,7 @@ defmodule MelodyMatch.MatchmakerTest do
         longitude: nil
       }
       traits2 = %{
-        acousticness: 0.1,
+        acousticness: 50,
         danceability: 0.0,
         energy: 0.0,
         instrumentalness: 0.0,
@@ -168,6 +218,40 @@ defmodule MelodyMatch.MatchmakerTest do
       }
 
       refute MatcherTopTrack.best_match(traits1, %{1 => traits2, 2 => traits2})
+    end
+
+    test "returns no match if minimum location not met" do
+      traits1 = %{
+        acousticness: 0.0,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        # Berlin
+        latitude: "52.5075419",
+        longitude: "13.4251364"
+      }
+      traits2 = %{
+        acousticness: 0.0,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        latitude: nil,
+        longitude: nil
+      }
+
+      refute MatcherTopTrack.best_match(traits1, %{2 => traits2})
     end
   end
 end
