@@ -10,11 +10,12 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
   @max_location_meters 500_000
 
   @impl true
-  def best_match(_user, pool) when map_size(pool) == 0, do: nil
+  def best_match(_, _, pool) when map_size(pool) == 0, do: nil
 
   @impl true
-  def best_match(user, pool) do
+  def best_match(recent_partners, user, pool) do
     {other_id, _} = pool
+    |> Enum.filter(fn {id, _} -> !Enum.member?(recent_partners, id) end)
     |> Enum.filter(fn {_, traits} -> close_enough(user, traits) end)
     |> Enum.map(fn {id, traits} -> {id, traits_difference(user, traits)} end)
     |> Enum.filter(fn {_, diff} -> diff <= @minimum_diff end)

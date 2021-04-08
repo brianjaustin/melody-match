@@ -76,7 +76,8 @@ defmodule MelodyMatch.Matchmaker do
 
   def handle_call({:try_match, user_id}, _from, pool) do
     params = get_matching_params(user_id)
-    other_user_id = matcher().best_match(params, pool)
+    recent_partners = get_recent_partners(user_id)
+    other_user_id = matcher().best_match(recent_partners, params, pool)
 
     if other_user_id do
       {:ok, match} = %{first_user_id: other_user_id, second_user_id: user_id}
@@ -104,6 +105,17 @@ defmodule MelodyMatch.Matchmaker do
     else
       %{latitude: user.last_latitude, longitude: user.last_longitude}
     end
+  end
+
+  defp get_recent_partners(user_id) do
+    Matches.get_user_recent_matches(user_id)
+    |> Enum.map(fn m ->
+      if m.first_user_id == user_id do
+        m.second_user_id
+      else
+        m.first_user_id
+      end
+    end)
   end
 
   defp matcher(), do: Application.get_env(:melody_match, :default_matcher)

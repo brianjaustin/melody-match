@@ -31,7 +31,7 @@ defmodule MelodyMatchWeb.MatchmakerChannelTest do
   end
 
   test "join with no match", %{user: user} do
-    expect(MatcherMock, :best_match, fn _, %{} -> nil end)
+    expect(MatcherMock, :best_match, fn _, _, %{} -> nil end)
 
     token = Phoenix.Token.sign(MelodyMatchWeb.Endpoint, "user_id", user.id)
     {:ok, _, _socket} = socket(MelodyMatchWeb.UserSocket)
@@ -42,7 +42,7 @@ defmodule MelodyMatchWeb.MatchmakerChannelTest do
     {:ok, user2} = %{email: "ch2@example.com", name: "some name", password: "super_strong_pass1234"}
     |> Accounts.create_user()
 
-    expect(MatcherMock, :best_match, fn _, %{} -> user2.id end)
+    expect(MatcherMock, :best_match, fn _, _, %{} -> user2.id end)
 
     token = Phoenix.Token.sign(MelodyMatchWeb.Endpoint, "user_id", user.id)
     {:ok, _, _socket} = socket(MelodyMatchWeb.UserSocket)
