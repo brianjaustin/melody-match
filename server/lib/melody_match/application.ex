@@ -14,9 +14,11 @@ defmodule MelodyMatch.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: MelodyMatch.PubSub},
       # Start the Endpoint (http/https)
-      MelodyMatchWeb.Endpoint
+      MelodyMatchWeb.Endpoint,
       # Start a worker by calling: MelodyMatch.Worker.start_link(arg)
       # {MelodyMatch.Worker, arg}
+      MelodyMatch.PoolBackupAgent,
+      MelodyMatch.MatchmakerSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

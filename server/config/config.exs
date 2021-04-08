@@ -7,6 +7,10 @@
 # General application configuration
 use Mix.Config
 
+config :melody_match,
+  ecto_repos: [MelodyMatch.Repo],
+  default_matcher: MelodyMatch.Matchmaker.MatcherAny
+
 # Configures the endpoint
 config :melody_match, MelodyMatchWeb.Endpoint,
   url: [host: "localhost"],
