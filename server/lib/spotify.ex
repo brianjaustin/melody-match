@@ -20,8 +20,9 @@ defmodule Spotify do
     - code: access code from OAuth grant, must be fetched separately
     - redirect_uri: string representation of the uri to call back to once the token is saved
   """
-  def get_and_save_tokens(user_id, :code, code, redirect_uri) do
+  def get_and_save_tokens(user_id, code) do
     url = "https://accounts.spotify.com/api/token"
+    redirect_uri = Application.get_env(:melody_match, :spotify)[:redirect_uri]
     body = {:form, [
       {"grant_type", "authorization_code"},
       {"code", code},
