@@ -21,9 +21,11 @@ defmodule MelodyMatchWeb.Router do
 
   scope "/api/v1", MelodyMatchWeb do
     pipe_through :api
-
-    resources "/users", UserController, except: [:new, :edit]
+    get("/users/:id/matches", UserController, :show)
+    resources "/users", UserController, only: [:index, :show, :create, :update, :delete]
     resources "/spotify_tokens", SpotifyTokenController, only: [:create, :update, :delete]
+    resources "/session", SessionController, only: [:create]
+    resources "/matches", MatchController, only: [:show]
   end
 
   # Enables LiveDashboard only for development

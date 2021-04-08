@@ -112,6 +112,15 @@ defmodule MelodyMatch.Accounts do
     User.changeset(user, attrs)
   end
 
+  def authenticate(email, pass) do
+    user = Repo.get_by(User, email: email)
+    case Argon2.check_pass(user, pass) do
+      {:ok, user} -> user
+      _ -> nil
+    end
+  end
+
+
   @doc """
   Returns the list of spotify_tokens.
 
