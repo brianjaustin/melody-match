@@ -1,8 +1,8 @@
 defmodule MelodyMatchWeb.UserController do
   use MelodyMatchWeb, :controller
-
   alias MelodyMatch.Accounts
   alias MelodyMatch.Accounts.User
+  alias MelodyMatch.Matches
 
   action_fallback MelodyMatchWeb.FallbackController
 
@@ -13,7 +13,9 @@ defmodule MelodyMatchWeb.UserController do
 
   def matches(conn, %{"id" => id}) do
     matches = Matches.get_matches_by_user_id(id)
-    render(conn, "index.json", matches: matches)
+    conn
+    |> put_view(MelodyMatchWeb.MatchView)
+    |> render("index.json", matches: matches)
   end
 
   def create(conn, %{"name" => name, "email" => email, "password" => password}) do
