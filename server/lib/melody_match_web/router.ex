@@ -21,7 +21,7 @@ defmodule MelodyMatchWeb.Router do
 
   scope "/api/v1", MelodyMatchWeb do
     pipe_through :api
-    get("/users/:id/matches", UserController, :show)
+    get("/users/:id/matches", UserController, :matches)
     resources "/users", UserController, only: [:index, :show, :create, :update, :delete]
     resources "/spotify_tokens", SpotifyTokenController, only: [:create, :update, :delete]
     resources "/session", SessionController, only: [:create]
