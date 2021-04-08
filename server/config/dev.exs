@@ -1,5 +1,10 @@
 use Mix.Config
 
+# Uncomment this for easier testing
+# config :melody_match,
+#  ecto_repos: [MelodyMatch.Repo],
+#  default_matcher: MelodyMatch.Matchmaker.MatcherAny
+
 # Configure your database
 config :melody_match, MelodyMatch.Repo,
   username: "melody_match",
