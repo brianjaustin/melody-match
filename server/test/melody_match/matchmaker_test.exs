@@ -6,6 +6,7 @@ defmodule MelodyMatch.MatchmakerTest do
   alias MelodyMatch.Accounts
   alias MelodyMatch.Matchmaker
   alias MelodyMatch.Matchmaker.MatcherMock
+  alias MelodyMatch.Matchmaker.MatcherTopTrack
 
   @matchmaker_id "*"
 
@@ -95,6 +96,78 @@ defmodule MelodyMatch.MatchmakerTest do
       assert Matchmaker.try_match(@matchmaker_id, user1.id) == nil
       Matchmaker.remove_user(@matchmaker_id, user1.id)
       assert Matchmaker.try_match(@matchmaker_id, user2.id) == nil
+    end
+  end
+
+  describe "top track matcher" do
+    test "returns no match for empty pool" do
+      refute MatcherTopTrack.best_match(%{}, %{})
+    end
+
+    test "returns best match with no previous matches" do
+      traits1 = %{
+        acousticness: 0.0,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        latitude: nil,
+        longitude: nil
+      }
+      traits2 = %{
+        acousticness: 0.01,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        latitude: nil,
+        longitude: nil
+      }
+
+      assert MatcherTopTrack.best_match(traits1, %{1 => traits1, 2 => traits2}) == 1
+    end
+
+    test "returns no match if minimum threshold not met" do
+      traits1 = %{
+        acousticness: 0.0,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        latitude: nil,
+        longitude: nil
+      }
+      traits2 = %{
+        acousticness: 0.1,
+        danceability: 0.0,
+        energy: 0.0,
+        instrumentalness: 0.0,
+        liveness: 0.0,
+        loudness: 0.0,
+        mode: 0.0,
+        speechiness: 0.0,
+        tempo: 0.0,
+        valence: 0.0,
+        latitude: nil,
+        longitude: nil
+      }
+
+      refute MatcherTopTrack.best_match(traits1, %{1 => traits2, 2 => traits2})
     end
   end
 end
