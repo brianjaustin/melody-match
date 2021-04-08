@@ -1,7 +1,19 @@
 import { Container, ListGroup, Row, Col } from "react-bootstrap/cjs";
+import { connect } from "react-redux";
+import { fetch_tracks } from "../api";
+import { useEffect, useCallback } from "react";
 import "./Tracks.scss";
 
-export function Tracks({ tracks }) {
+function TrackList({ tracks }) {
+  const getTracksCallback = useCallback(() => {
+    fetch_tracks();
+  });
+
+  useEffect(() => {
+    getTracksCallback();
+  }, []);
+
+
   const listItems = tracks.map((track) => (
     rendertrack(track)
   ));
@@ -57,3 +69,9 @@ export function Tracks({ tracks }) {
     </div>
   );
 }
+
+function state2props({ tracks }) {
+  return { tracks };
+}
+
+export default connect(state2props)(TrackList);

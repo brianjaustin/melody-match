@@ -1,8 +1,18 @@
 import "./App.scss";
-import { Tracks } from "./Tracks/Tracks";
+import { Container} from "react-bootstrap";
+import { Switch, Route } from "react-router-dom";
+import { connect } from "react-redux";
+
+import TrackList from "./Tracks/Tracks";
+import MatchList from "./Matches/List"
 import { useState, useEffect } from "react";
 import { Register } from "./Login/Register";
+import { Login } from "./Login/Login"
+import {Lobby} from "./Lobby/Lobby"
 import "bootstrap/dist/css/bootstrap.min.css";
+import Nav from "./Nav";
+import { fetch_tracks } from "./api";
+
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -30,19 +40,52 @@ function App() {
     }
   }, [_token]);
 
-  function getTopTracks() {
-  }
+  // function getTopTracks() {
+  //   data = fetch_tracks(state.token)
+  // }
 
-  let body = <Register spotify={state.token} submit={getTopTracks}></Register>;
-  if (state.tracks) {
-    body = <p>{JSON.stringify(state.tracks.items)}</p>;
-    body = <Tracks tracks={state.tracks.items} />;
-  }
+  // let body = <Register spotify={state.token} submit={getTopTracks}></Register>;
+  // if (state.tracks) {
+  //   body = <p>{JSON.stringify(state.tracks.items)}</p>;
+  //   body = <Tracks tracks={state.tracks.items} />;
+  // }
+
+  let body = (
+    <Switch>
+      <Route path="/" exact>
+        <Lobby />
+      </Route>
+      <Route path="/register" exact>
+        <Register spotify={state.token} submit={console.log}></Register>
+      </Route>
+      <Route path="/login" exact>
+        <Login />
+      </Route>
+      <Route path="/tracks" exact>
+        <TrackList />
+      </Route>
+      <Route path="/matches" exact>
+        <MatchList />
+      </Route>
+    </Switch>
+  );
+  // if (session) {
+  //   body = (
+  //     <Switch>
+  //       <Route path="/" exact>
+  //         <Register spotify={state.token} submit={getTopTracks}></Register>
+  //       </Route>
+  //       <Route path="/tracks" exact>
+  //         <Tracks track={state.tracks.items} />
+  //       </Route>
+  //     </Switch>
+  //   );
+  // }
   return (
-    <div className="App">
-      <header className="App-header">Melody Matches</header>
+    <Container fluid>
+      <Nav />
       {body}
-    </div>
+    </Container>
   );
 }
 

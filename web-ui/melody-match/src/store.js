@@ -18,11 +18,31 @@ function user_form(state = {}, action) {
   }
 }
 
+function tracks(state= [], action){
+    switch (action.type) {
+      case "tracks/set":
+        return action.data;
+      default:
+        return state;
+    }
+}
+
+function matches(state = [], action) {
+  switch (action.type) {
+    case "matches/set":
+      return action.data;
+    default:
+      return state;
+  }
+}
+
 function root_reducer(state, action) {
   console.log("root_reducer", state, action);
   let reducer = combineReducers({
     users,
     user_form,
+    tracks,
+    matches
   });
   return reducer(state, action);
 }
