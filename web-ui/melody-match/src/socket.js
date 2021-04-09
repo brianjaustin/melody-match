@@ -4,15 +4,7 @@ let socket = null;
 
 let channel = null;
 
-let gameState = {
-  guesses: [],
-  participants: [],
-  previous_winners: [],
-  lobby: true,
-  won: false,
-  lost: false,
-  error: "",
-};
+let gameState = 0;
 
 let callback = null;
 
@@ -21,11 +13,13 @@ function state_update(st) {
   console.log(st)
   gameState = st;
   if (callback) {
+    console.log("Running Callback")
     callback(st);
   }
 }
 export function ch_join_lobby(user_id, token) {
-  let socket = new Socket("ws://localhost:4000/socket", {
+  console.log(user_id)
+  socket = new Socket("ws://localhost:4000/socket", {
     params: { token: "" },
   });
   socket.connect();
@@ -33,16 +27,25 @@ export function ch_join_lobby(user_id, token) {
   channel
     .join()
     .receive("ok", state_update)
-    .receive("error", (resp) => console.log("Unable to join", resp));
+    .receive("error", (resp) => console.log("Unable to join matchmaker channel", resp));
   channel.on("matchFound", state_update);
 }
 export function ch_start(match_id, token) {
-  channel = socket.channel(`chat:${match_id}`, token);
+  if (channel == null){
+      console.log("CREATING NEW SOCKET")
+      socket = new Socket("ws://localhost:4000/socket", {
+        params: { token: "" },
+      });
+      socket.connect();
+  }
+  console.log(`TRYING TO JOIN CHAT CHANNEL WITH MATCH ID ${match_id}`)
+  channel = socket.channel(`chat:${match_id}`, {token: token});
   channel
     .join()
-    .receive("ok", state_update)
-    .receive("error", (resp) => console.log("Unable to join", resp));
-  channel.on("view", state_update);
+    .receive("ok", state_update("Joined Chat"))
+    .receive("error", (resp) => console.log("Unable to join chat channel", resp));
+  channel.on("receiveChatMessage", state_update);
+  channel.on("chatUserLeft", console.log)
 }
 
 export function ch_join(cb) {

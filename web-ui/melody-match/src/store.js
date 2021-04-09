@@ -36,9 +36,18 @@ function matches(state = [], action) {
   }
 }
 
-function channel(state=[], action) {
+function messages(state=[], action) {
   switch (action.type) {
-    case "channel/set":
+    case "messages/set":
+      return action.data;
+    default:
+      return state;
+  }
+}
+
+function match_found(state = [], action) {
+  switch (action.type) {
+    case "matchFound/set":
       return action.data;
     default:
       return state;
@@ -84,7 +93,9 @@ function root_reducer(state, action) {
     user_form,
     tracks,
     matches,
-    session
+    session,
+    messages,
+    match_found
   });
   return reducer(state, action);
 }

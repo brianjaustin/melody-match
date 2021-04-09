@@ -58,133 +58,96 @@ function PreLobby({submit}) {
   );
 }
 
-function ActiveChat({ reset, gameState, setGameState }) {
-  const [currentGuess, setCurrentGuess] = useState("");
+function ActiveChat({ token, messages }) {
+  const [msgText, setMsgText] = useState("");
 
-  function guess() {
-    ch_push("guess", { number: currentGuess });
-  }
-
-  function pass() {
-    ch_push("guess", { number: "----" });
+  function send() {
+    ch_push("sendChatMessage", { message: msgText, token: token });
   }
 
   // Update functions based on code from lecture from 2021-01-29:
   // https://github.com/NatTuck/scratch-2021-01/blob/master/4550/0129/hangman/src/App.js
   function updateGuess(ev) {
-    let guess = ev.target.value;
-    setCurrentGuess(guess);
+    let msg = ev.target.value;
+    setMsgText(msg);
   }
 
   function keyPress(ev) {
     if (ev.key === "Enter") {
-      guess();
+      send();
     }
   }
-
-  function displayGuesses(player_info) {
-    let player_name = player_info[0];
-    let guesses = player_info[1];
-    return guesses.map((guess, index) =>
-      displayGuess(guess, player_name, index)
-    );
-  }
-
-  function displayGuess(guess, name, index) {
-    return (
-      <tr key={String(guess.guess).concat(String(name).concat(index))}>
-        <td>{name}</td>
-        <td>{guess.guess}</td>
-        <td>{`${guess.a}A${guess.b}B`}</td>
-      </tr>
-    );
-  }
-
-  let guesses = (
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Guess</th>
-          <th>Result</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Object.entries(gameState.guesses).map((guesses) =>
-          displayGuesses(guesses)
-        )}
-      </tbody>
-    </table>
-  );
 
   let input_guess = (
     <div className="row">
       <div className="column column-60">
         <input
           type="text"
-          value={currentGuess}
+          value={msgText}
           onChange={updateGuess}
           onKeyPress={keyPress}
         />
       </div>
       <div className="column">
-        <button onClick={guess}>Guess</button>
-      </div>
-      <div className="column">
-        <button onClick={pass}>Pass</button>
+        <button onClick={send}>Send</button>
       </div>
     </div>
   );
-
-  if (gameState.participants[gameState.player_name][0] != "player") {
-    input_guess = <p>Only Ready Players can guess</p>;
-  }
 
   return (
     <div>
       <h1>Bulls</h1>
       <p>Guess a 4 digit number:</p>
-      <ErrorMessage msg={gameState.error} />
       {input_guess}
-      <div className="column">
-        <button
-          className="button button-outline"
-          onClick={() => {
-            reset();
-            setCurrentGuess("");
-          }}
-        >
-          Reset Game
-        </button>
-      </div>
-      {guesses}
+      <p>{JSON.stringify(messages)}</p>
     </div>
   );
 }
 
-function Chat({ channel, session }) {
+function Chat({ messages, match_found, session }) {
   const [chatState, setChatState] = useState(0);
+  const [inChat, setInChat] = useState(false);
 
-  useEffect(() => ch_join(console.log));
+  function setChatStateFunc(st) {
+    console.log("setting chat state based on message")
+    let new_state = Object.assign(st, { player_name: session.name });
+    setChatState(new_state);
+  }
+
+    useEffect(() => {
+      ch_join(setChatState);
+    }, [chatState]);
 
   function enterLobby(){
     setChatState(1);
     ch_join_lobby(session.user_id, session.token)
   }
 
+  function matchFound(){
+    console.log(chatState)
+    if (chatState == "chatUserLeft"){
+      setChatState(0);
+    }
+    ch_start(chatState.matchId, session.token)
+  }
+
   if (chatState == 0) {
     return <PreLobby submit={enterLobby}/>;
-  } else if (chatState == 1){
-    return <Lobby />
-  } else {
+
+  } else if (chatState.matchId) {
+    matchFound()
     return (
-      <Lobby />
+      <ActiveChat token={session.token} messages={chatState} />
     );
+  } else if (chatState == "Joined Chat"){
+    return <ActiveChat token={session.token} messages={chatState} />;
+  } else {
+    return <Lobby />;
   }
 }
 
-function state2props({ channel, session }) {
-  return { channel, session };
+function state2props({ messages, match_found, session }) {
+  return { messages, match_found, session };
 }
 
 export default connect(state2props)(Chat);
