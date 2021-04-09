@@ -18,7 +18,7 @@ import store from "./store";
 
 
 // Get the hash of the url
-const hash = window.location.hash
+const hash = window.location.search
   .substring(1)
   .split("&")
   .reduce(function (initial, item) {
@@ -31,7 +31,8 @@ const hash = window.location.hash
 // window.location.hash = "";
 
 function App({session}) {
-  let _token = hash.access_token;
+  console.log(window.location.search)
+  let _token = hash.code;
   const [state, setState] = useState({
     loggedIn: false,
     token: false,
@@ -39,6 +40,7 @@ function App({session}) {
   });
   useEffect(() => {
     if (_token) {
+      console.log(_token)
       setState({ loggedIn: false, token: _token, tracks: false });
         let action = {
           type: "spotifyToken/set",
