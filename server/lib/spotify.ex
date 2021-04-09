@@ -81,8 +81,8 @@ defmodule Spotify do
     client_id = Application.get_env(:melody_match, :spotify)[:client_id]
     client_secret = Application.get_env(:melody_match, :spotify)[:client_secret]
     IO.puts client_id
-    IO.puts client_secret
-    auth = Base.encode64("#{client_id}:#{client_secret}")
+    IO.write client_secret
+    auth = Base.encode64("#{String.trim(client_id)}:#{String.trim(client_secret)}")
     test = Base.encode64("#{client_id}")
     IO.puts test
     ["Authorization": "Basic #{auth}", "Content-Type": "application/x-www-form-urlencoded"]
@@ -90,7 +90,7 @@ defmodule Spotify do
 
   def get_top_songs(user_id, limit \\ 1, retries \\ 1) do
     tokens = Accounts.get_user_spotify_token!(user_id)
-
+    IO.puts tokens.auth_token
     url = "https://api.spotify.com/v1/me/top/tracks?limit=#{limit}"
     headers = ["Authorization": "Bearer #{tokens.auth_token}"]
     response = HTTPoison.get!(url, headers)

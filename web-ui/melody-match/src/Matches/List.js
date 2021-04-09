@@ -5,7 +5,7 @@ import { useEffect, useCallback } from "react";
 
 function MatchList({ matches, session }) {
   const getMatchesCallback = useCallback(() => {
-    fetch_previous_matches(session.user_id);
+    fetch_previous_matches(session.user_id, session.token);
   });
 
   useEffect(() => {

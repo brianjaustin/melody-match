@@ -27,7 +27,7 @@ function EditUser({ session, users }) {
     </Alert>
     );
     const getUsersCallback = useCallback(() => {
-    fetch_users(session.user_id);
+    fetch_users(session.user_id, session.token);
     });
 
     useEffect(() => {

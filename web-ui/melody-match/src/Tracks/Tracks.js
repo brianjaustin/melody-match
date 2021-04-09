@@ -6,7 +6,7 @@ import "./Tracks.scss";
 
 function TrackList({ tracks, session }) {
   const getTracksCallback = useCallback(() => {
-    fetch_tracks(session.user_id);
+    fetch_tracks(session.user_id, session.token);
   });
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 import store from "./store";
 import * as $ from "jquery";
 
-export async function api_get(path) {
-  let text = await fetch("http://localhost:4000/api/v1" + path, {});
+export async function api_get(path, params={}) {
+  let text = await fetch("http://localhost:4000/api/v1" + path, params);
   let resp = await text.json();
   return resp.data;
 }
@@ -51,9 +51,9 @@ export function api_login(email, password, latitude, longitude) {
   });
 }
 
-export function fetch_users(user_id=-1) {
+export function fetch_users(user_id=-1, token=null) {
   if (user_id > -1) {
-    api_get(`/users/${user_id}`).then((data) =>
+    api_get(`/users/${user_id}`, {token: token}).then((data) =>
       store.dispatch({
         type: "users/set",
         data: data,
@@ -64,10 +64,10 @@ export function fetch_users(user_id=-1) {
   }
 }
 
-export function fetch_tracks(user_id=-1) {
+export function fetch_tracks(user_id=-1, token=null) {
   if (user_id > -1) {
     console.log(`FETCHING ACTUAL TRACKS FOR USER ${user_id}`);
-    api_get(`/users/${user_id}/top_songs`).then((data) =>
+    api_get(`/users/${user_id}/top_songs`, {token: token}).then((data) =>
       store.dispatch({
         type: "tracks/set",
         data: data,
@@ -79,11 +79,11 @@ export function fetch_tracks(user_id=-1) {
   }
 }
 
-export function fetch_previous_matches(user_id=-1){
+export function fetch_previous_matches(user_id=-1, token=null){
 
   if (user_id > -1){
     console.log(`FETCHING ACTUAL MATCHES FOR USER ${user_id}`)
-    api_get(`/users/${user_id}/matches`).then((data) =>
+    api_get(`/users/${user_id}/matches`, {token: token}).then((data) =>
       store.dispatch({
         type: "matches/set",
         data: data,
