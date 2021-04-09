@@ -240,6 +240,10 @@ components:
           format: email
         password:
           type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
     CreateUser:
       required:
         - email
@@ -261,8 +265,6 @@ components:
         password:
           type: string
         name:
-          type: string
-        location:
           type: string
     UserDetails:
       properties:
