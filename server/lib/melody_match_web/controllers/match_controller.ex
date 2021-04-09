@@ -4,6 +4,9 @@ defmodule MelodyMatchWeb.MatchController do
   alias MelodyMatch.Matches
   alias MelodyMatch.Matches.Match
 
+ plug MelodyMatchWeb.Plugs.RequireToken when action in [
+    :create, :show, :update, :delete
+  ]
 
   def show(conn, %{"id" => id}) do
     m = Matches.get_match!(id)

@@ -59,7 +59,7 @@ defmodule MelodyMatch.Accounts.User do
 
   defp validate_password(changeset, field, options \\ []) do
     validate_change(changeset, field, fn _, password -> 
-      case NotQwerty123.PasswordStrength.strong_password?(password) do
+      case NotQwerty123.PasswordStrength.strong_password?(password, min_length: 10) do
         {:ok, _} -> []
         {:error, msg} -> [{field, options[:message] || msg}]
       end

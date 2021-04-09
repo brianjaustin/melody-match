@@ -6,6 +6,26 @@ defmodule MelodyMatchWeb.UserController do
 
   action_fallback MelodyMatchWeb.FallbackController
 
+  plug :require_owner when action in [:matches, :update, :delete]
+
+  def require_owner(conn, _params) do
+    user_id = String.to_integer(conn.params["id"])
+    user = Accounts.get_user!(user_id)
+
+    current_user = conn.assigns[:current_user]
+    
+
+    if current_user && current_user.id == user.id do
+      conn
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> put_view(MelodyMatchWeb.ErrorView)
+      |> render("unauthorized.json")
+      |> halt()
+    end
+  end
+
   def index(conn, _params) do
     users = Accounts.list_users()
     render(conn, "index.json", users: users)
