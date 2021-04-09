@@ -42,7 +42,7 @@ function SessionInfo({ session }) {
   }
 
   return (
-    <p>
+    <p className="contrast">
       Logged in as {session.name}
       <Button onClick={logout}>Logout</Button>
     </p>

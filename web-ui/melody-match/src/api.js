@@ -69,44 +69,20 @@ export function fetch_tracks() {
   });
 }
 
-export function fetch_previous_matches(){
-  let matches = {
-    matches: [
-      {
-        id: 4,
-        users: [
-          {
-            id: 4,
-            email: "rose@email.com",
-            name: "Rose",
-          },
-          {
-            id: 5,
-            email: "betsy@email.com",
-            name: "Betsy",
-          },
-        ],
-      },
-      {
-        id: 5,
-        users: [
-          {
-            id: 4,
-            email: "rose@email.com",
-            name: "Rose",
-          },
-          {
-            id: 6,
-            email: "bob@email.com",
-            name: "Bob",
-          },
-        ],
-      },
-    ],
-  };
+export function fetch_previous_matches(user_id=-1){
 
-  console.log(matches)
-  store.dispatch({type: "matches/set", data:matches})
+  if (user_id > -1){
+    console.log(`FETCHING ACTUAL MATCHES FOR USER ${user_id}`)
+    api_get(`/users/${user_id}/matches`).then((data) =>
+      store.dispatch({
+        type: "matches/set",
+        data: data,
+      })
+    );
+  } else {
+    console.log("NO MATCHES YET")
+    store.dispatch({type: "matches/set", data: {data: []}})
+  }
 
 }
 

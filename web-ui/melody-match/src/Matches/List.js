@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { fetch_previous_matches } from "../api";
 import { useEffect, useCallback } from "react";
 
-function MatchList({ matches }) {
+function MatchList({ matches, session }) {
   const getMatchesCallback = useCallback(() => {
-    fetch_previous_matches();
+    fetch_previous_matches(session.user_id);
   });
 
   useEffect(() => {
@@ -22,7 +22,8 @@ function MatchList({ matches }) {
       )
   }
 
-    const listItems = matches.matches.map((match) => rendermatch(match));
+  console.log(matches)
+  const listItems = matches.map((match) => rendermatch(match));
 
   
 
@@ -47,8 +48,8 @@ function MatchList({ matches }) {
   );
 }
 
-function state2props({ matches }) {
-  return { matches };
+function state2props({ matches, session }) {
+  return { matches, session };
 }
 
 export default connect(state2props)(MatchList);

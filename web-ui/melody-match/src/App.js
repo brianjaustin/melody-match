@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
 import TrackList from "./Tracks/Tracks.js";
+import MatchList from "./Matches/List.js"
 import Register from "./Session/Register.js";
 import Login from "./Session/Login.js"
 import Lobby from "./Lobby/Lobby.js";
@@ -65,7 +66,7 @@ function App() {
         <Login />
       </Route>
       <Route path="/matches" exact>
-        <p>Match List</p>
+        <MatchList />
       </Route>
     </Switch>
   );
