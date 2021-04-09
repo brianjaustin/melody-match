@@ -3,6 +3,7 @@ defmodule MelodyMatchWeb.UserSocket do
 
   ## Channels
   channel "chat:*", MelodyMatchWeb.ChatChannel
+  channel "matchmaker:*", MelodyMatchWeb.MatchmakerChannel
 
 
   # Socket params are passed from the client and can

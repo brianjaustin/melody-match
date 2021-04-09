@@ -37,6 +37,7 @@ function LoginForm() {
 
 function SessionInfo({ session }) {
   function logout(ev) {
+    console.log("LOGGING OUT")
     ev.preventDefault();
     store.dispatch({ type: "session/clear" });
   }
@@ -90,6 +91,7 @@ function AppNav({ error }) {
             <Link to="/">Lobby</Link>
             <Link to="/matches">My Previous Matches</Link>
             <Link to="/tracks">My Top Tracks</Link>
+            <Link to="/user"> My Profile</Link>
           </Nav>
         </Col>
         <Col>

@@ -4,9 +4,9 @@ import { fetch_tracks } from "../api";
 import { useEffect, useCallback } from "react";
 import "./Tracks.scss";
 
-function TrackList({ tracks }) {
+function TrackList({ tracks, session }) {
   const getTracksCallback = useCallback(() => {
-    fetch_tracks();
+    fetch_tracks(session.user_id);
   });
 
   useEffect(() => {
@@ -70,8 +70,8 @@ function TrackList({ tracks }) {
   );
 }
 
-function state2props({ tracks }) {
-  return { tracks };
+function state2props({ tracks, session }) {
+  return { tracks, session };
 }
 
 export default connect(state2props)(TrackList);

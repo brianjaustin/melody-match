@@ -30,7 +30,7 @@ defmodule MelodyMatchWeb.SpotifyTokenController do
   end
 
   def create(conn, %{"id" => id, "auth_code" => auth_code}) do
-    with {:ok, %SpotifyToken{} = spotify_token} <- Spotify.get_and_save_tokens(id, auth_code) do
+    with {:ok, %SpotifyToken{} = spotify_token} <- Spotify.get_and_save_tokens(id, :code, auth_code) do
       send_resp(conn, :no_content, "")
     end
   end

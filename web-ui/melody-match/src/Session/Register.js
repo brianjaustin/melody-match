@@ -1,35 +1,44 @@
 import "./Register.scss";
-import { Form, Button, Container, Row, Col, InputGroup} from "react-bootstrap";
+import { Form, Button, Container, Row, Col, InputGroup, Alert} from "react-bootstrap";
 import React, {useEffect, useState} from 'react';
+import { api_post } from "../api";
+import { connect } from "react-redux";
 
 export const authEndpoint = "https://accounts.spotify.com/authorize";
 // Replace with your app's client ID, redirect URI and desired scopes
 // const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientId = "135bad1f37bc489b95aa2c2d2e7fd4c6";
-const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
+const redirectUri = "http%3A%2F%2Flocalhost%3A3000%2Fregister";
 const scopes = ["user-top-read"];
 
 
-export default function Register({spotify, submit}) {
+function Register({spotifyToken}) {
   const [validated, setValidated] = useState(false);
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [userName, setUserName] = useState("")
+  const [email, setEmail] = useState("")
+  const [alert, setAlert] = useState(
+    <Alert key="registration_response" variant="primary">
+      Fill out form to register a new user
+    </Alert>
+  );
 
   let errorMessage=""
 
   const handleSubmit = (event) => {
     console.log("testing submit")
+    event.preventDefault();
     navigator.geolocation.getCurrentPosition(function (position) {
       console.log(position);
     });
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
+
       event.stopPropagation();
     }
 
-    console.log(password)
-    console.log(confirmPassword)
+    console.log(form)
 
     if(password != confirmPassword){
       console.log("Passwords do not match")
@@ -38,6 +47,27 @@ export default function Register({spotify, submit}) {
 
     }else{
       setValidated(true);
+      api_post("/users", {
+        email: email,
+        name: userName,
+        password: password,
+      }).then((data) => {
+        console.log("register resp", data);
+        if (data.data) {
+          setAlert(
+            <Alert key="registration_response" variant='primary'>
+              User sucessfully created.
+            </Alert>
+          );
+        } else if (data.errors) {
+          console.log("FOUND ERRORS")
+          setAlert(
+            <Alert key="registration_response" variant="danger">
+              User could not be created {JSON.stringify(data.errors)}
+            </Alert>
+          );
+        }
+      });
     }
 
 
@@ -57,8 +87,7 @@ export default function Register({spotify, submit}) {
   let registration_form = (<p>Complete Step 1</p>)
 
 
-  if (spotify){
-    console.log(spotify)
+  if (spotifyToken){
     spotify_component = (
       <div>
         {" "}
@@ -75,61 +104,74 @@ export default function Register({spotify, submit}) {
       </div>
     );
     registration_form = (
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Form.Row>
-            <Form.Group as={Col} md="4" controlId="validationCustom01">
-              <Form.Label>First name</Form.Label>
-              <Form.Control required type="text" placeholder="First name" />
-              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group as={Col} md="4" controlId="validationCustom02">
-              <Form.Label>Last name</Form.Label>
-              <Form.Control required type="text" placeholder="Last name" />
-              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} md="8" controlId="validationCustom02">
-              <Form.Label>Email</Form.Label>
-              <Form.Control required type="email" />
-              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} md="6" controlId="validationCustom02">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                required
-                type="password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group as={Col} md="6" controlId="validationCustom02">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                required
-                type="password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                isInvalid={password != confirmPassword}
-              />
-              <Form.Control.Feedback type="valid">
-                Passwords match.
-              </Form.Control.Feedback>
-              <Form.Control.Feedback type="invalid">
-                Passwords do not match
-              </Form.Control.Feedback>
-              <p>{errorMessage}</p>
-            </Form.Group>
-          </Form.Row>
-          <p>Please accept Location permissions when submitting in order to proceed.</p>
-          <Button type="submit">Submit form</Button>
-        </Form>
-      );
+      <Form onSubmit={handleSubmit}>
+        <Form.Row>
+          <Form.Group as={Col} md="4" controlId="validationCustom01">
+            <Form.Label>User Name</Form.Label>
+            <Form.Control
+              required
+              type="text"
+              placeholder="User Name"
+              onChange={(e) => setUserName(e.target.value)}
+            />
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="8" controlId="validationCustom02">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              required
+              type="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="6" controlId="validationCustom02">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              required
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+              isInvalid={password.length < 10}
+            />
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">
+              Password must be 10 characters or longer
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="6" controlId="validationCustom02">
+            <Form.Label>Confirm Password</Form.Label>
+            <Form.Control
+              required
+              type="password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              isInvalid={password != confirmPassword}
+              isValid={password == confirmPassword}
+            />
+            <Form.Control.Feedback type="valid">
+              Passwords match.
+            </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">
+              Passwords do not match
+            </Form.Control.Feedback>
+            <p>{errorMessage}</p>
+          </Form.Group>
+        </Form.Row>
+        <p>
+          Please accept Location permissions when submitting in order to
+          proceed.
+        </p>
+        <Button type="submit">Submit form</Button>
+      </Form>
+    );
   }
 
   return (
     <div className="Register">
+      {alert}
       <Container>
         <Row>
           <h2 className="page-title">Register a New User</h2>
@@ -151,3 +193,9 @@ export default function Register({spotify, submit}) {
     </div>
   );
 }
+
+function state2props({ spotifyToken }) {
+  return { spotifyToken };
+}
+
+export default connect(state2props)(Register);

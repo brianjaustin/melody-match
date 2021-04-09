@@ -7,12 +7,14 @@ import TrackList from "./Tracks/Tracks.js";
 import MatchList from "./Matches/List.js"
 import Register from "./Session/Register.js";
 import Login from "./Session/Login.js"
+import EditUser from "./User/Edit.js"
 import Lobby from "./Lobby/Lobby.js";
 import Chat from "./Lobby/Channel"
 import "bootstrap/dist/css/bootstrap.min.css";
 import Nav from "./Nav";
-import { fetch_tracks } from "./api";
+import { api_post, fetch_tracks } from "./api";
 import { useState, useEffect } from "react";
+import store from "./store";
 
 
 // Get the hash of the url
@@ -28,7 +30,7 @@ const hash = window.location.hash
   }, {});
 window.location.hash = "";
 
-function App() {
+function App({session}) {
   let _token = hash.access_token;
   const [state, setState] = useState({
     loggedIn: false,
@@ -38,6 +40,12 @@ function App() {
   useEffect(() => {
     if (_token) {
       setState({ loggedIn: false, token: _token, tracks: false });
+        let action = {
+          type: "spotifyToken/set",
+          data: _token
+        };
+        store.dispatch(action);
+        api_post(`/users/${session.user_id}/spotify_token`, {auth_code: _token});
     }
   }, [_token]);
 
@@ -57,7 +65,7 @@ function App() {
         <Chat />
       </Route>
       <Route path="/register" exact>
-        <Register spotify={state.token} submit={console.log}></Register>
+        <Register />
       </Route>
       <Route path="/tracks" exact>
         <TrackList />
@@ -67,6 +75,9 @@ function App() {
       </Route>
       <Route path="/matches" exact>
         <MatchList />
+      </Route>
+      <Route path="/user" exact>
+        <EditUser />
       </Route>
     </Switch>
   );
@@ -90,4 +101,8 @@ function App() {
   );
 }
 
-export default App;
+function state2props({ session }) {
+  return { session };
+}
+
+export default connect(state2props)(App);

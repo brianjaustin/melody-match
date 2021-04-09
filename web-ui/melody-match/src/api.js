@@ -7,7 +7,7 @@ export async function api_get(path) {
   return resp.data;
 }
 
-async function api_post(path, data) {
+export async function api_post(path, data) {
   let opts = {
     method: "POST",
     headers: {
@@ -19,8 +19,8 @@ async function api_post(path, data) {
   return await resp.json();
 }
 
-export function api_login(email, password) {
-  api_post("/session", { email, password }).then((data) => {
+export function api_login(email, password, latitude, longitude) {
+  api_post("/session", { email, password, latitude, longitude }).then((data) => {
     console.log("login resp", data);
     if (data.session) {
       let action = {
@@ -48,25 +48,19 @@ export function fetch_users() {
   );
 }
 
-export function fetch_tracks() {
-  $.ajax({
-    url: "https://api.spotify.com/v1/me/top/tracks?limit=10",
-    type: "GET",
-    beforeSend: (xhr) => {
-      xhr.setRequestHeader(
-        "Authorization",
-        "Bearer BQDtR3GcfmD6DvozFdgA9yiHSWpnTM-X6wE7rdJ8Q6POrBVfovVKFwVYbGH9pJf1hR0SR8TjNhA2WhdBdNA6BBw3AB9xPuFL9cLj3REQOWcmMBCBZD6NXslv-gb2Y3pzMzz_t0RHMRCYTZUVOODaCkpH"
-      );
-    },
-    success: (data) => {
-      console.log("fetched tracks")
-      console.log(data)
+export function fetch_tracks(user_id=-1) {
+  if (user_id > -1) {
+    console.log(`FETCHING ACTUAL TRACKS FOR USER ${user_id}`);
+    api_get(`/users/${user_id}/top_songs`).then((data) =>
       store.dispatch({
         type: "tracks/set",
-        data: data.items,
-      });
-    },
-  });
+        data: data,
+      })
+    );
+  } else {
+    console.log("NO MATCHES YET");
+    store.dispatch({ type: "tracks/set", data: [] });
+  }
 }
 
 export function fetch_previous_matches(user_id=-1){

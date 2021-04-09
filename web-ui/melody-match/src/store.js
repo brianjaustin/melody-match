@@ -49,9 +49,9 @@ function messages(state=[], action) {
   }
 }
 
-function match_found(state = [], action) {
+function spotifyToken(state = [], action) {
   switch (action.type) {
-    case "matchFound/set":
+    case "spotifyToken/set":
       return action.data;
     default:
       return state;
@@ -99,7 +99,7 @@ function root_reducer(state, action) {
     matches,
     session,
     messages,
-    match_found
+    spotifyToken
   });
   return reducer(state, action);
 }
