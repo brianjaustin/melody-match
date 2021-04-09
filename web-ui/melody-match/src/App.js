@@ -28,7 +28,7 @@ const hash = window.location.hash
     }
     return initial;
   }, {});
-window.location.hash = "";
+// window.location.hash = "";
 
 function App({session}) {
   let _token = hash.access_token;

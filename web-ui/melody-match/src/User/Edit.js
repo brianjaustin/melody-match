@@ -72,7 +72,7 @@ function EditUser({ session, users }) {
 
   let spotify_component = (
     <Button
-      href={`${authEndpoint}?response_type=token&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+      href={`${authEndpoint}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
         "%20"
       )}&show_dialog=true`}
       className="spotify"

@@ -22,6 +22,7 @@ defmodule Spotify do
   """
   def get_and_save_tokens(user_id, :code, code, redirect_uri) do
     url = "https://accounts.spotify.com/api/token"
+
     client_id = Application.get_env(:melody_match, :spotify)[:client_id]
     IO.puts redirect_uri
     IO.puts client_id
