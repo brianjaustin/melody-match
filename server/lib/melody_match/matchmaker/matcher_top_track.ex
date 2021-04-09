@@ -41,9 +41,13 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
     abs(diff_raw) * 1000
   end
 
+  defp close_enough(%{latitude: nil, longitude: nil}, %{latitude: nil, longitude: nil}) do
+    true
+  end
+
   defp close_enough(%{latitude: lat1, longitude: long1}, %{latitude: lat2, longitude: long2}) do
     cond do
-      (lat1 == nil) || (long1 == nil) -> true
+      (lat1 == nil) || (long1 == nil) -> false
       (lat2 == nil) || (long2 == nil) -> false
       true -> close_enough(lat1, long1, lat2, long2)
     end
