@@ -11,7 +11,7 @@ Final project for CS4550 (web dev)
 * Is your app deployed and working? Yes.
 * For each team member, what work did that person do on the project?
   * Brian Austin - API and system design (backend), chat and
-    matchmaking implementation (backend), schema design
+    matchmaking implementation (backend), deployment
   * Liam Brown - Concept, frontend support
   * Emma Reed - Concept, frontend implementation, matching algorithm
   * Patricia Thompson - Concept, REST API implementation (backend)
