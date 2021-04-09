@@ -15,13 +15,9 @@ c_id =
 c_sec =
   System.get_env("SPOTIFY_CLIENT_SECRET") || ""
 
-red_uri = 
-  System.get_env("SPOTIFY_REDIRECT_URI") || ""
-
 config :melody_match, :spotify,
   client_id: c_id,
-  client_secret: c_sec,
-  redirect_uri: red_uri
+  client_secret: c_sec
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

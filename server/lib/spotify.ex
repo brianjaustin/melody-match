@@ -20,19 +20,21 @@ defmodule Spotify do
     - code: access code from OAuth grant, must be fetched separately
     - redirect_uri: string representation of the uri to call back to once the token is saved
   """
-  def get_and_save_tokens(user_id, :code, code) do
+  def get_and_save_tokens(user_id, :code, code, redirect_uri) do
     url = "https://accounts.spotify.com/api/token"
-    redirect_uri = Application.get_env(:melody_match, :spotify)[:redirect_uri]
+    client_id = Application.get_env(:melody_match, :spotify)[:client_id]
+    IO.puts redirect_uri
+    IO.puts client_id
     body = {:form, [
       {"grant_type", "authorization_code"},
       {"code", code},
       {"redirect_uri", redirect_uri}
     ]}
-
+    IO.puts "ready to post to spotify"
     response = HTTPoison.post!(url, body, auth_headers())
+    IO.inspect response
     if response.status_code == 200 do
       toks = Jason.decode!(response.body)
-      
       # TODO: make this be an upsert? and remove the update function
       Accounts.create_spotify_token(%{
         user_id: user_id,
@@ -77,8 +79,11 @@ defmodule Spotify do
   defp auth_headers() do
     client_id = Application.get_env(:melody_match, :spotify)[:client_id]
     client_secret = Application.get_env(:melody_match, :spotify)[:client_secret]
+    IO.puts client_id
+    IO.puts client_secret
     auth = Base.encode64("#{client_id}:#{client_secret}")
-    
+    test = Base.encode64("#{client_id}")
+    IO.puts test
     ["Authorization": "Basic #{auth}", "Content-Type": "application/x-www-form-urlencoded"]
   end
 

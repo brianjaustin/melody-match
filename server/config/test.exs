@@ -18,13 +18,9 @@ c_id =
 c_sec =
   System.get_env("SPOTIFY_CLIENT_SECRET") || ""
 
-red_uri = 
-  System.get_env("SPOTIFY_REDIRECT_URI") || ""
-
 config :melody_match, :spotify,
   client_id: c_id,
   client_secret: c_sec,
-  redirect_uri: red_uri,
   ecto_repos: [MelodyMatch.Repo]
 
 # We don't run a server during test. If one is required,

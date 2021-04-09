@@ -35,16 +35,9 @@ c_sec =
   environment variable SPOTIFY_CLIENT_SECRET is missing.
   """
 
-red_uri = 
-  System.get_env("SPOTIFY_REDIRECT_URI") ||
-  raise """
-  environment variable SPOTIFY_REDIRECT_URI is missing.
-  """
-
 config :melody_match, :spotify,
   client_id: c_id,
-  client_secret: c_sec,
-  redirect_uri: red_uri
+  client_secret: c_sec
 
 config :melody_match, MelodyMatchWeb.Endpoint,
   http: [
