@@ -9,13 +9,19 @@ defmodule MelodyMatchWeb.MatchmakerChannel do
   def join("matchmaker:" <> user_id, payload, socket) do
     if authorized?(user_id, payload) do
       {user_id, _} = Integer.parse(user_id)
-      Matchmaker.start(@matchmaker_id)
-      Matchmaker.try_match(@matchmaker_id, user_id)
+      send(self(), {:find_match, user_id})
 
       {:ok, assign(socket, :user_id, user_id)}
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+
+  @impl true
+  def handle_info({:find_match, user_id}, socket) do
+    Matchmaker.start(@matchmaker_id)
+    Matchmaker.try_match(@matchmaker_id, user_id)
+    {:noreply, socket}
   end
 
   @impl true

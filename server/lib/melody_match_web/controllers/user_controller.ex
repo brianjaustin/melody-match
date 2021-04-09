@@ -20,7 +20,7 @@ defmodule MelodyMatchWeb.UserController do
 
   def create(conn, %{"name" => name, "email" => email, "password" => password}) do
     hashed = Argon2.add_hash(password)
-    updated_params = %{"name": name, "email": email, "password": password, "password_hash": hashed.password_hash}
+    updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash}
     with {:ok, %User{} = user} <- Accounts.create_user(updated_params) do
       conn
       |> put_status(:created)
@@ -37,7 +37,8 @@ defmodule MelodyMatchWeb.UserController do
   def update(conn, %{"id" => id, "name" => name, "email" => email, "password" => password, "location" => location}) do
     user = Accounts.get_user!(id)
     hashed = Argon2.add_hash(password)
-    updated_params = %{"name": name, "email": email, "password": password, "password_hash": hashed.password_hash, "location": location}
+    # TODO: this is broken (need latitude/longitude, not locaion)
+    updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash, location: location}
     with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
       render(conn, "show.json", user: user)
     end
