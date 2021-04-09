@@ -81,7 +81,7 @@ export function fetch_previous_matches(user_id=-1){
     );
   } else {
     console.log("NO MATCHES YET")
-    store.dispatch({type: "matches/set", data: {data: []}})
+    store.dispatch({type: "matches/set", data: []})
   }
 
 }

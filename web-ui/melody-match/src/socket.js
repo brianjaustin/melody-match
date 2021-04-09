@@ -20,6 +20,7 @@ function state_update(st) {
 }
 
 function store_update(st){
+  console.log(st)
   let action = {
     type: "messages/append",
     data: st,
@@ -27,8 +28,25 @@ function store_update(st){
   store.dispatch(action);
 }
 
+export function ch_leave(){
+  socket = null;
+  let action = {
+    type: "messages/set",
+    data: "CHANNEL_LEFT",
+  };
+  store.dispatch(action);
+}
+
+export function message_clear(){
+  let action = {
+    type: "messages/clear",
+    data: "CHANNEL_LEFT",
+  };
+  store.dispatch(action);
+}
+
 export function ch_join_lobby(user_id, token) {
-  console.log(user_id)
+  message_clear();
   socket = new Socket("ws://localhost:4000/socket", {
     params: { token: "" },
   });
@@ -38,8 +56,9 @@ export function ch_join_lobby(user_id, token) {
     .join()
     .receive("ok", state_update)
     .receive("error", (resp) => console.log("Unable to join matchmaker channel", resp));
-  channel.on("matchFound", state_update);
+  channel.on("matchFound", store_update);
 }
+
 export function ch_start(match_id, token) {
   if (channel == null){
       console.log("CREATING NEW SOCKET")
@@ -55,7 +74,7 @@ export function ch_start(match_id, token) {
     .receive("ok", state_update("Joined Chat"))
     .receive("error", (resp) => console.log("Unable to join chat channel", resp));
   channel.on("receiveChatMessage", store_update);
-  channel.on("chatUserLeft", console.log)
+  channel.on("chatUserLeft", ch_leave);
 }
 
 export function ch_join(cb) {

@@ -41,7 +41,9 @@ function messages(state=[], action) {
     case "messages/set":
       return action.data;
     case "messages/append":
-      return [...state, action.data]
+      return [...state, action.data];
+    case "messages/clear":
+      return [];
     default:
       return state;
   }

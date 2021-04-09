@@ -9,11 +9,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Spinner, Button } from "react-bootstrap";
-import { ch_join, ch_join_lobby, ch_push, ch_start } from "../socket";
+import { ch_join, ch_join_lobby, ch_push, ch_start, ch_leave } from "../socket";
 import _ from "lodash";
 import { connect } from "react-redux";
 import { api_login } from "../api";
 import "./Lobby.scss";
+import store from "../store";
 
 function ErrorMessage({ msg }) {
   if (msg) {
@@ -67,10 +68,11 @@ function ChatHistory({messages}) {
 
 const MessageChat = connect(({ messages }) => ({ messages }))(ChatHistory);
 
-function ActiveChat({ token }) {
+function ActiveChat({ token, userId }) {
   const [msgText, setMsgText] = useState("");
 
   function send() {
+    console.log(reset)
     ch_push("sendChatMessage", { message: msgText, token: token });
   }
 
@@ -87,6 +89,14 @@ function ActiveChat({ token }) {
     }
   }
 
+  function reset(){
+        console.log("LEAVING CHANNEL");
+        console.log(token, userId)
+        ch_push("chatUserLeft", { message: "", token: token });
+        ch_leave();
+        ch_join_lobby(userId, token);
+  }
+
   let input_guess = (
     <div className="row">
       <div className="column column-60">
@@ -99,6 +109,16 @@ function ActiveChat({ token }) {
       </div>
       <div className="column">
         <button onClick={send}>Send</button>
+      </div>
+      <div className="column">
+        <button
+          onClick={() => {
+            reset();
+            setMsgText("");
+          }}
+        >
+          Leave Channel
+        </button>
       </div>
     </div>
   );
@@ -115,19 +135,8 @@ function ActiveChat({ token }) {
 
 
 
-function Chat({ messages, match_found, session }) {
+function Chat({ messages, session }) {
   const [chatState, setChatState] = useState(0);
-  const [inChat, setInChat] = useState(false);
-
-  function setChatStateFunc(st) {
-    console.log("setting chat state based on message")
-    let new_state = Object.assign(st, { player_name: session.name });
-    setChatState(new_state);
-  }
-
-    useEffect(() => {
-      ch_join(setChatState);
-    }, [chatState]);
 
   function enterLobby(){
     setChatState(1);
@@ -139,28 +148,35 @@ function Chat({ messages, match_found, session }) {
     if (chatState == "chatUserLeft"){
       setChatState(0);
     }
-    ch_start(chatState.matchId, session.token)
+    ch_start(messages[0].matchId, session.token)
+    setChatState(2)
+  }
+
+  function reset(){
+    setChatState(0)
   }
 
   if (chatState == 0) {
     return <PreLobby submit={enterLobby}/>;
-
-  } else if (chatState.matchId) {
+  } else if (messages.length > 0 && messages[0].matchId && chatState == 1) {
     matchFound()
     return (
-      <ActiveChat token={session.token} messages={chatState} />
+      <ActiveChat token={session.token} userId={session.user_id} />
     );
-  } else if (chatState == "Joined Chat"){
-    return <ActiveChat token={session.token} messages={chatState} />;
+  } else if (chatState == 2 && messages == "CHANNEL_LEFT"){
+    reset();
+    return <PreLobby submit={enterLobby} />;
+  } else if (chatState == 2){
+    return <ActiveChat token={session.token} userId={session.user_id} />;
   } else if (chatState.message){
-    return <ActiveChat token={session.token} messages={chatState} />;
+    return <ActiveChat token={session.token} userId={session.user_id} />;
   } else {
     return <Lobby />;
   }
 }
 
-function state2props({ messages, match_found, session }) {
-  return { messages, match_found, session };
+function state2props({ messages, session }) {
+  return { messages, session };
 }
 
 export default connect(state2props)(Chat);
