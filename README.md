@@ -25,6 +25,8 @@ Final project for CS4550 (web dev)
   Our application concept is the same as presented in the proposal.
   In terms of implementation details, location radius is configured
   as 500 km for all users, rather than configurable per user.
+  Additionally, only users' top track is used (rather than an average)
+  in order to simplify the matching algorithm.
 * How do users interact with your application?
   What can they accomplish by doing so?
   Users interact with the application through the React frontend.
