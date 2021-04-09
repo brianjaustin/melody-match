@@ -17,6 +17,8 @@ let gameState = {
 let callback = null;
 
 function state_update(st) {
+  console.log("State updated")
+  console.log(st)
   gameState = st;
   if (callback) {
     callback(st);
@@ -27,12 +29,12 @@ export function ch_join_lobby(user_id, token) {
     params: { token: "" },
   });
   socket.connect();
-  channel = socket.channel(`matchmaker:${user_id}`, token);
+  channel = socket.channel(`matchmaker:${user_id}`, {token: token});
   channel
     .join()
     .receive("ok", state_update)
     .receive("error", (resp) => console.log("Unable to join", resp));
-  channel.on("view", state_update);
+  channel.on("matchFound", state_update);
 }
 export function ch_start(match_id, token) {
   channel = socket.channel(`chat:${match_id}`, token);

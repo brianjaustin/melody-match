@@ -165,11 +165,11 @@ function ActiveChat({ reset, gameState, setGameState }) {
 function Chat({ channel, session }) {
   const [chatState, setChatState] = useState(0);
 
-  // useEffect(() => ch_join(setGameStateWOName));
+  useEffect(() => ch_join(console.log));
 
   function enterLobby(){
     setChatState(1);
-    ch_join_lobby(session.user_id, "fdsjak;vrf")
+    ch_join_lobby(session.user_id, session.token)
   }
 
   if (chatState == 0) {
