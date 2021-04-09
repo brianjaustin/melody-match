@@ -8,7 +8,7 @@ export const authEndpoint = "https://accounts.spotify.com/authorize";
 // Replace with your app's client ID, redirect URI and desired scopes
 // const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientId = "135bad1f37bc489b95aa2c2d2e7fd4c6";
-const redirectUri = "http%3A%2F%2Flocalhost%3A3000%2Fregister";
+const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
 const scopes = ["user-top-read"];
 
 

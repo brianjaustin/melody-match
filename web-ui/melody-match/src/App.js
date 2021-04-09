@@ -45,19 +45,9 @@ function App({session}) {
           data: _token
         };
         store.dispatch(action);
-        api_post(`/users/${session.user_id}/spotify_token`, {auth_code: _token});
+        api_post(`/users/${session.user_id}/spotify_token`, {auth_code: _token, redirect_uri: "http://localhost:3000"});
     }
   }, [_token]);
-
-  // function getTopTracks() {
-  //   data = fetch_tracks(state.token)
-  // }
-
-  // let body = <Register spotify={state.token} submit={getTopTracks}></Register>;
-  // if (state.tracks) {
-  //   body = <p>{JSON.stringify(state.tracks.items)}</p>;
-  //   body = <Tracks tracks={state.tracks.items} />;
-  // }
 
   let body = (
     <Switch>

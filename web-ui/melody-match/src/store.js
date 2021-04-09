@@ -3,6 +3,7 @@ import { createStore, combineReducers } from "redux";
 function users(state = [], action) {
   switch (action.type) {
     case "users/set":
+      console.log(action.data, "UPDATING USERS")
       return action.data;
     default:
       return state;
