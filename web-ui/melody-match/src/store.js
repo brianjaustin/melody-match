@@ -40,6 +40,8 @@ function messages(state=[], action) {
   switch (action.type) {
     case "messages/set":
       return action.data;
+    case "messages/append":
+      return [...state, action.data]
     default:
       return state;
   }

@@ -1,4 +1,5 @@
 import { Socket } from "phoenix";
+import store from "./store";
 
 let socket = null;
 
@@ -17,6 +18,15 @@ function state_update(st) {
     callback(st);
   }
 }
+
+function store_update(st){
+  let action = {
+    type: "messages/append",
+    data: st,
+  };
+  store.dispatch(action);
+}
+
 export function ch_join_lobby(user_id, token) {
   console.log(user_id)
   socket = new Socket("ws://localhost:4000/socket", {
@@ -44,7 +54,7 @@ export function ch_start(match_id, token) {
     .join()
     .receive("ok", state_update("Joined Chat"))
     .receive("error", (resp) => console.log("Unable to join chat channel", resp));
-  channel.on("receiveChatMessage", state_update);
+  channel.on("receiveChatMessage", store_update);
   channel.on("chatUserLeft", console.log)
 }
 

@@ -13,6 +13,7 @@ import { ch_join, ch_join_lobby, ch_push, ch_start } from "../socket";
 import _ from "lodash";
 import { connect } from "react-redux";
 import { api_login } from "../api";
+import "./Lobby.scss";
 
 function ErrorMessage({ msg }) {
   if (msg) {
@@ -58,7 +59,15 @@ function PreLobby({submit}) {
   );
 }
 
-function ActiveChat({ token, messages }) {
+function ChatHistory({messages}) {
+  return(
+    <h4>{JSON.stringify(messages)}</h4>
+  )
+}
+
+const MessageChat = connect(({ messages }) => ({ messages }))(ChatHistory);
+
+function ActiveChat({ token }) {
   const [msgText, setMsgText] = useState("");
 
   function send() {
@@ -99,10 +108,12 @@ function ActiveChat({ token, messages }) {
       <h1>Bulls</h1>
       <p>Guess a 4 digit number:</p>
       {input_guess}
-      <p>{JSON.stringify(messages)}</p>
+      <MessageChat />
     </div>
   );
 }
+
+
 
 function Chat({ messages, match_found, session }) {
   const [chatState, setChatState] = useState(0);
@@ -140,6 +151,8 @@ function Chat({ messages, match_found, session }) {
       <ActiveChat token={session.token} messages={chatState} />
     );
   } else if (chatState == "Joined Chat"){
+    return <ActiveChat token={session.token} messages={chatState} />;
+  } else if (chatState.message){
     return <ActiveChat token={session.token} messages={chatState} />;
   } else {
     return <Lobby />;
