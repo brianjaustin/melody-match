@@ -172,6 +172,8 @@ defmodule MelodyMatch.Accounts do
 
   """
   def create_spotify_token(attrs \\ %{}) do
+    IO.puts "got to creating a token"
+    IO.inspect attrs
     %SpotifyToken{}
     |> SpotifyToken.changeset(attrs)
     |> Repo.insert()

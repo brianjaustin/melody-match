@@ -6,6 +6,26 @@ defmodule MelodyMatchWeb.UserController do
 
   action_fallback MelodyMatchWeb.FallbackController
 
+  plug :require_owner when action in [:proxy, :matches, :update, :delete]
+
+  def require_owner(conn, _params) do
+    user_id = String.to_integer(conn.params["id"])
+    user = Accounts.get_user!(user_id)
+
+    current_user = conn.assigns[:current_user]
+
+
+    if current_user && current_user.id == user.id do
+      conn
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> put_view(MelodyMatchWeb.ErrorView)
+      |> render("unauthorized.json")
+      |> halt()
+    end
+  end
+
   def index(conn, _params) do
     users = Accounts.list_users()
     render(conn, "index.json", users: users)
@@ -16,6 +36,13 @@ defmodule MelodyMatchWeb.UserController do
     conn
     |> put_view(MelodyMatchWeb.MatchView)
     |> render("index.json", matches: matches)
+  end
+
+  def proxy(conn, %{"id" => id}) do
+    result = Spotify.get_spotify_data(id)
+    conn
+    |> put_view(MelodyMatchWeb.SpotifyView)
+    |> render("show.json", spotify: result)
   end
 
   def create(conn, %{"name" => name, "email" => email, "password" => password}) do
@@ -34,15 +61,23 @@ defmodule MelodyMatchWeb.UserController do
     render(conn, "show.json", user: user)
   end
 
-  def update(conn, %{"id" => id, "name" => name, "email" => email, "password" => password, "location" => location}) do
+  def update(conn, %{"id" => id, "name" => name, "email" => email, "password" => password}) do
     user = Accounts.get_user!(id)
     hashed = Argon2.add_hash(password)
-    # TODO: this is broken (need latitude/longitude, not locaion)
-    updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash, location: location}
+    updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash}
     with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
       render(conn, "show.json", user: user)
     end
   end
+
+  def update(conn, %{"id" => id, "last_latitude" => lat, "last_longitude" => long}) do
+    user = Accounts.get_user!(id)
+    updated_params = %{last_latitude: lat, last_longitude: long}
+    with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
+      render(conn, "show.json", user: user)
+    end
+  end
+
 
   def delete(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)

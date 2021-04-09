@@ -3,14 +3,35 @@ defmodule MelodyMatchWeb.SpotifyTokenController do
 
   alias MelodyMatch.Accounts
   alias MelodyMatch.Accounts.SpotifyToken
+  alias Spotify
+
 
   action_fallback MelodyMatchWeb.FallbackController
 
-  def create(conn, %{"spotify_token" => spotify_token_params}) do
-    with {:ok, %SpotifyToken{} = spotify_token} <- Accounts.create_spotify_token(spotify_token_params) do
+  plug :require_owner when action in [:update, :delete]
+
+  def require_owner(conn, _params) do
+    IO.inspect conn.params
+    user_id = String.to_integer(conn.params["id"])
+    user = Accounts.get_user!(user_id)
+
+    current_user = conn.assigns[:current_user]
+
+
+    if current_user && current_user.id == user.id do
       conn
-      |> put_status(:created)
-      |> render("spotify_token.json", spotify_token: spotify_token)
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> put_view(MelodyMatchWeb.ErrorView)
+      |> render("unauthorized.json")
+      |> halt()
+    end
+  end
+
+  def create(conn, %{"id" => id, "auth_code" => auth_code}) do
+    with {:ok, %SpotifyToken{} = spotify_token} <- Spotify.get_and_save_tokens(id, auth_code) do
+      send_resp(conn, :no_content, "")
     end
   end
 
