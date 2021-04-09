@@ -20,7 +20,7 @@ defmodule Spotify do
     - code: access code from OAuth grant, must be fetched separately
     - redirect_uri: string representation of the uri to call back to once the token is saved
   """
-  def get_and_save_tokens(user_id, code) do
+  def get_and_save_tokens(user_id, :code, code) do
     url = "https://accounts.spotify.com/api/token"
     redirect_uri = Application.get_env(:melody_match, :spotify)[:redirect_uri]
     body = {:form, [
@@ -102,4 +102,26 @@ defmodule Spotify do
         {:error, response.status_code, "Error fetching top tracks."}
     end
   end
+
+
+  def get_spotify_data(user_id, limit \\ 1, retries \\ 1) do
+    tokens = Accounts.get_user_spotify_token!(user_id)
+
+    url = "https://api.spotify.com/v1/me/top/tracks?limit=#{limit}"
+    headers = ["Authorization": "Bearer #{tokens.auth_token}"]
+    response = HTTPoison.get!(url, headers)
+
+    cond do
+      response.status_code == 200 ->
+        songs = response.body
+        |> Jason.decode!()
+        {:ok, songs}
+      retries > 0 ->
+        get_and_save_tokens(tokens.user_id, :refresh)
+        get_spotify_data(user_id, limit, retries - 1)
+      true ->
+        {:error, response.status_code, "Error fetching from Spotify."}
+    end
+  end
+
 end

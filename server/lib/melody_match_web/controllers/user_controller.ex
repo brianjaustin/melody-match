@@ -6,7 +6,7 @@ defmodule MelodyMatchWeb.UserController do
 
   action_fallback MelodyMatchWeb.FallbackController
 
-  plug :require_owner when action in [:matches, :update, :delete]
+  plug :require_owner when action in [:proxy, :matches, :update, :delete]
 
   def require_owner(conn, _params) do
     user_id = String.to_integer(conn.params["id"])
@@ -36,6 +36,13 @@ defmodule MelodyMatchWeb.UserController do
     conn
     |> put_view(MelodyMatchWeb.MatchView)
     |> render("index.json", matches: matches)
+  end
+
+  def proxy(conn, %{"id" => id}) do
+    result = Spotify.get_spotify_data(id)
+    conn
+    |> put_view(MelodyMatchWeb.SpotifyView)
+    |> render("show.json", spotify: result)
   end
 
   def create(conn, %{"name" => name, "email" => email, "password" => password}) do
