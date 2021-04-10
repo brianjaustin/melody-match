@@ -32,7 +32,7 @@ defmodule Spotify do
     response = HTTPoison.post!(url, body, auth_headers())
     if response.status_code == 200 do
       toks = Jason.decode!(response.body)
-      # TODO: make this be an upsert? and remove the update function
+
       Accounts.create_spotify_token(%{
         user_id: user_id,
         auth_token: toks["access_token"],
