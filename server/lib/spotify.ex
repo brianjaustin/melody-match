@@ -34,7 +34,7 @@ defmodule Spotify do
     if response.status_code == 200 do
       toks = Jason.decode!(response.body)
 
-      Accounts.create_spotify_token(%{
+      spotify_token = Accounts.create_spotify_token(%{
         user_id: user_id,
         auth_token: toks["access_token"],
         refresh_token: toks["refresh_token"]
@@ -53,8 +53,8 @@ defmodule Spotify do
                     speechiness: top_song["speechiness"],
                     tempo: top_song["tempo"],
                     valence: top_song["valence"]}
-      IO.inspect top_track
       Tracks.create_top_track(top_track)
+      spotify_token
     else
       {:error, response.status_code, response.body}
     end
@@ -122,7 +122,6 @@ defmodule Spotify do
  def get_top_song_info(user_id, track_id, retries \\ 1) do
     tokens = Accounts.get_user_spotify_token!(user_id)
 
-    IO.puts "getting song info"
     url = "https://api.spotify.com/v1/audio-features/#{track_id}"
     headers = ["Authorization": "Bearer #{tokens.auth_token}"]
     response = HTTPoison.get!(url, headers)

@@ -50,7 +50,6 @@ defmodule MelodyMatch.Tracks do
 
   """
   def create_top_track(attrs \\ %{}) do
-    IO.puts "got to making top track"
     %TopTrack{}
     |> TopTrack.changeset(attrs)
     |> Repo.insert(on_conflict: :replace_all, conflict_target: [:user_id])
