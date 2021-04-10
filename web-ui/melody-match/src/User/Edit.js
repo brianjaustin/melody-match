@@ -1,13 +1,6 @@
 import { connect } from "react-redux";
 import { api_login, fetch_users } from "../api";
-import {
-  Form,
-  Button,
-  Container,
-  Row,
-  Col,
-  Alert,
-} from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
 import React, { useEffect, useState, useCallback } from "react";
 import { api_patch } from "../api";
 
@@ -17,64 +10,72 @@ const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
 const scopes = ["user-top-read"];
 
 function EditUser({ session, users }) {
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [userName, setUserName] = useState(users.name);
-    const [email, setEmail] = useState(users.email);
-    const [alert, setAlert] = useState(
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userName, setUserName] = useState(users.name);
+  const [email, setEmail] = useState(users.email);
+  const [alert, setAlert] = useState(
     <Alert key="registration_response" variant="primary">
-        Fill out form to register a new user
+      Fill out form to register a new user
     </Alert>
-    );
-    const [position, setPosition] = useState({coords: {latitude:0, longitude:0}})
-    const getUsersCallback = useCallback(() => {
+  );
+  const [position, setPosition] = useState({
+    coords: { latitude: 0, longitude: 0 },
+  });
+  const getUsersCallback = useCallback(() => {
     fetch_users(session.user_id, session.token);
-    });
+  });
 
-    useEffect(() => {
+  useEffect(() => {
     getUsersCallback();
-    }, []);
+  }, []);
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(setPosition);
-    }, []);
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(setPosition);
+  }, []);
 
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      const form = event.currentTarget;
-      if (form.checkValidity() === false) {
-        event.stopPropagation();
-      }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    }
 
-
-      if (password == confirmPassword) {
-        api_patch(`/users/${session.user_id}`, {
+    if (password == confirmPassword) {
+        console.log(session.token)
+      api_patch(
+        `/users/${session.user_id}`,
+        {
           email: email,
           name: userName,
-          password: password
-        }, session.token).then((data) => {
-          if (data.data) {
-            setAlert(
-              <Alert key="registration_response" variant="primary">
-                User Sucessfully Updated.
-              </Alert>
-            );
-            
-            console.log(position.coords)
-            api_login(email, password, position.coords.latitude, position.coords.longitude)
-            
+          password: password,
+        },
+        session.token
+      ).then((data) => {
+        if (data.data) {
+          setAlert(
+            <Alert key="registration_response" variant="primary">
+              User Sucessfully Updated.
+            </Alert>
+          );
 
-          } else if (data.errors) {
-            setAlert(
-              <Alert key="registration_response" variant="danger">
-                User could not be created {JSON.stringify(data.errors)}
-              </Alert>
-            );
-          }
-        });
-      }
-    };
-
+          console.log(position.coords);
+          api_login(
+            email,
+            password,
+            position.coords.latitude,
+            position.coords.longitude
+          );
+        } else if (data.errors) {
+          setAlert(
+            <Alert key="registration_response" variant="danger">
+              User could not be created {JSON.stringify(data.errors)}
+            </Alert>
+          );
+        }
+      });
+    }
+  };
 
   let spotify_component = (
     <Button
@@ -87,10 +88,9 @@ function EditUser({ session, users }) {
     </Button>
   );
 
-
   return (
     <Container>
-        {alert}
+      {alert}
       {spotify_component}
       <Form onSubmit={handleSubmit}>
         <Form.Row>

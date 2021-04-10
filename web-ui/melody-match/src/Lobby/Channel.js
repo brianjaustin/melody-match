@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Spinner, Button, ListGroup } from "react-bootstrap";
-import { ch_join, ch_join_lobby, ch_push, ch_start, ch_leave } from "../socket";
+import { ch_join_lobby, ch_push, ch_start, ch_leave } from "../socket";
 import _ from "lodash";
 import { connect } from "react-redux";
 import { api_login } from "../api";

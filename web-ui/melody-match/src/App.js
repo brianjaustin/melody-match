@@ -8,9 +8,7 @@ import MatchList from "./Matches/List.js"
 import Register from "./Session/Register.js";
 import Login from "./Session/Login.js"
 import EditUser from "./User/Edit.js"
-import Lobby from "./Lobby/Lobby.js";
 import Chat from "./Lobby/Channel"
-import "bootstrap/dist/css/bootstrap.min.css";
 import Nav from "./Nav";
 import { api_post, fetch_tracks } from "./api";
 import { useState, useEffect } from "react";
@@ -49,7 +47,8 @@ function App({session}) {
           api_post(`/users/${session.user_id}/spotify_token`, {
             auth_code: _token,
             redirect_uri: "http://localhost:3000",
-          });
+          },
+          session.token);
         }
 
     }
@@ -77,18 +76,6 @@ function App({session}) {
       </Route>
     </Switch>
   );
-  // if (session) {
-  //   body = (
-  //     <Switch>
-  //       <Route path="/" exact>
-  //         <Register spotify={state.token} submit={getTopTracks}></Register>
-  //       </Route>
-  //       <Route path="/tracks" exact>
-  //         <Tracks track={state.tracks.items} />
-  //       </Route>
-  //     </Switch>
-  //   );
-  // }
   return (
     <Container fluid>
       <Nav />

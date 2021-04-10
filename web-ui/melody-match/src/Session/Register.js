@@ -163,10 +163,6 @@ function Register({spotifyToken}) {
             <p>{errorMessage}</p>
           </Form.Group>
         </Form.Row>
-        <p>
-          Please accept Location permissions when submitting in order to
-          proceed.
-        </p>
         <Button type="submit">Submit form</Button>
       </Form>
     );
