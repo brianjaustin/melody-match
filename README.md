@@ -12,15 +12,20 @@ Final project for CS4550 (web dev)
 * For each team member, what work did that person do on the project?
   * Brian Austin - API and system design (backend), chat and
     matchmaking implementation (backend), deployment
-  * Liam Brown - Concept, frontend support
+  * Liam Brown - Concept, frontend design
   * Emma Reed - Concept, frontend implementation, matching algorithm
   * Patricia Thompson - Concept, REST API implementation (backend)
 
 ## App
 * What does your project 2 app do?
   Our application is a service that matches users together based on
-  the similarity of their most-played Spotify song. Once a match is
+  the similarity of their most-played Spotify song and approximate 
+  location. Once a match is
   found, the users can interact with each other via integrated chat.
+  In addition, users can view their top songs from spotify account 
+  via the "My Top Tracks" tab. They can also view all previous 
+  matches and see the email of previous matches if they want to 
+  continue talking off of the platform.
 * How has your app concept changed since the proposal?
   Our application concept is the same as presented in the proposal.
   In terms of implementation details, location radius is configured
@@ -41,7 +46,7 @@ Final project for CS4550 (web dev)
     song analysis for those tracks
   * Channels - used for matchmaking and chat functionality
   * Something neat - access user location with the browser's
-    location API
+    location API and use it when making matches.
 * What interesting stuff does your app include beyond the project
   requirements?
   * Custom matching algorithm for users, designed by Emma Reed
@@ -83,3 +88,19 @@ The following third-party libraries are employed by the backend:
   Version 2.0.
 * [geocalc](https://github.com/yltsrc/geocalc) for location
   difference calculation. This library falls under the MIT licencse.
+
+In addition to third-party libraries, we borrowed from Nat Tuck's 
+[scratch-repo](https://github.com/NatTuck/scratch-2021-01) for 
+support on redux and spa work, 
+baustin's [hw06](https://github.com/brianjaustin/cs4550-hw06) repo
+for support on sockets integration, Joe Karlsson's 
+[article on Spotify integration](https://levelup.gitconnected.com/how-to-build-a-spotify-player-with-react-in-15-minutes-7e01991bc4b6)
+for support on navigating the spotify API with the React framework,
+bautstin's 
+[events-spa](https://github.com/brianjaustin/cs4550-events-spa)
+for support integrating the phoenix back-end with the react front-end
+ and the 
+[spotifriend-experiments](https://github.com/brianjaustin/spotifriend-experiments)
+ for pulling in our initial proof of concept work.
+
+
