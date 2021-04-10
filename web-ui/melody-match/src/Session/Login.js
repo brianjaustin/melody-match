@@ -9,18 +9,13 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("testing submit");
-    console.log(email);
-    console.log(password);
     let lat = 0;
     let long = 0;
     navigator.geolocation.getCurrentPosition(function (position) {
-      console.log(position.coords);
       lat = position.coords.latitude
       long = position.coords.longitude
     });
     const form = event.currentTarget;
-    console.log(event);
     api_login(email, password, lat, long);
 
   }

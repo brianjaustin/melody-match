@@ -28,10 +28,9 @@ const hash = window.location.search
     }
     return initial;
   }, {});
-// window.location.hash = "";
+window.location.hash = "";
 
 function App({session}) {
-  console.log(window.location.search)
   let _token = hash.code;
   const [state, setState] = useState({
     loggedIn: false,
@@ -40,14 +39,19 @@ function App({session}) {
   });
   useEffect(() => {
     if (_token) {
-      console.log(_token)
       setState({ loggedIn: false, token: _token, tracks: false });
         let action = {
           type: "spotifyToken/set",
           data: _token
         };
         store.dispatch(action);
-        api_post(`/users/${session.user_id}/spotify_token`, {auth_code: _token, redirect_uri: "http://localhost:3000"});
+        if (session){
+          api_post(`/users/${session.user_id}/spotify_token`, {
+            auth_code: _token,
+            redirect_uri: "http://localhost:3000",
+          });
+        }
+
     }
   }, [_token]);
 

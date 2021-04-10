@@ -22,7 +22,6 @@ function MatchList({ matches, session }) {
       )
   }
 
-  console.log(matches)
   const listItems = matches.map((match) => rendermatch(match));
 
   

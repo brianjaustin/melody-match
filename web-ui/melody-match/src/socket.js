@@ -10,17 +10,13 @@ let gameState = 0;
 let callback = null;
 
 function state_update(st) {
-  console.log("State updated")
-  console.log(st)
   gameState = st;
   if (callback) {
-    console.log("Running Callback")
     callback(st);
   }
 }
 
 function store_update(st){
-  console.log(st)
   let action = {
     type: "messages/append",
     data: st,
@@ -61,13 +57,11 @@ export function ch_join_lobby(user_id, token) {
 
 export function ch_start(match_id, token) {
   if (channel == null){
-      console.log("CREATING NEW SOCKET")
       socket = new Socket("ws://localhost:4000/socket", {
         params: { token: "" },
       });
       socket.connect();
   }
-  console.log(`TRYING TO JOIN CHAT CHANNEL WITH MATCH ID ${match_id}`)
   channel = socket.channel(`chat:${match_id}`, {token: token});
   channel
     .join()

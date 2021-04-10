@@ -27,21 +27,15 @@ function Register({spotifyToken}) {
   let errorMessage=""
 
   const handleSubmit = (event) => {
-    console.log("testing submit")
     event.preventDefault();
-    navigator.geolocation.getCurrentPosition(function (position) {
-      console.log(position);
-    });
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
 
       event.stopPropagation();
     }
 
-    console.log(form)
 
     if(password != confirmPassword){
-      console.log("Passwords do not match")
       errorMessage = "Passwords Do Not Match"
       setValidated(false)
 
@@ -52,15 +46,24 @@ function Register({spotifyToken}) {
         name: userName,
         password: password,
       }).then((data) => {
-        console.log("register resp", data);
         if (data.data) {
           setAlert(
-            <Alert key="registration_response" variant='primary'>
+            <Alert key="registration_response" variant='success'>
               User sucessfully created.
             </Alert>
           );
+          api_post(`/users/${data.data.id}/spotify_token`, {
+            auth_code: spotifyToken,
+            redirect_uri: "http://localhost:3000",
+          }).then((data) => {
+              setAlert(
+                <Alert key="registration_response" variant="success">
+                  User Created and Spotify Token added.
+                </Alert>
+              );
+          });
+
         } else if (data.errors) {
-          console.log("FOUND ERRORS")
           setAlert(
             <Alert key="registration_response" variant="danger">
               User could not be created {JSON.stringify(data.errors)}

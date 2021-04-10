@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { fetch_users } from "../api";
+import { api_login, fetch_users } from "../api";
 import {
   Form,
   Button,
@@ -35,30 +35,34 @@ function EditUser({ session, users }) {
     }, []);
 
     const handleSubmit = (event) => {
-      console.log("testing submit");
       event.preventDefault();
       const form = event.currentTarget;
       if (form.checkValidity() === false) {
         event.stopPropagation();
       }
 
-      console.log(form);
 
       if (password == confirmPassword) {
-        api_patch("/users", {
+        api_patch(`/users/${session.user_id}`, {
           email: email,
           name: userName,
-          password: password,
-        }).then((data) => {
-          console.log("register resp", data);
+          password: password
+        }, session.token).then((data) => {
           if (data.data) {
             setAlert(
               <Alert key="registration_response" variant="primary">
-                User sucessfully created.
+                User Sucessfully Updated.
               </Alert>
             );
+            let lat = 0;
+            let long = 0;
+            navigator.geolocation.getCurrentPosition(function (position) {
+                lat = position.coords.latitude;
+                long = position.coords.longitude;
+            });
+            api_login(email, password, lat, long)
+
           } else if (data.errors) {
-            console.log("FOUND ERRORS");
             setAlert(
               <Alert key="registration_response" variant="danger">
                 User could not be created {JSON.stringify(data.errors)}
@@ -84,8 +88,8 @@ function EditUser({ session, users }) {
 
   return (
     <Container>
+        {alert}
       {spotify_component}
-      <p>{JSON.stringify(users)}</p>
       <Form onSubmit={handleSubmit}>
         <Form.Row>
           <Form.Group as={Col} md="4" controlId="validationCustom01">

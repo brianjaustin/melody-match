@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Spinner, Button } from "react-bootstrap";
+import { Container, Row, Col, Spinner, Button, ListGroup } from "react-bootstrap";
 import { ch_join, ch_join_lobby, ch_push, ch_start, ch_leave } from "../socket";
 import _ from "lodash";
 import { connect } from "react-redux";
@@ -49,6 +49,16 @@ function Lobby() {
   );
 }
 
+function NotLoggedIn(){
+  return (
+    <div className="pre-lobby">
+      <Container>
+        <h4>Please login or register in order to join chat.</h4>
+      </Container>
+    </div>
+  );
+}
+
 function PreLobby({submit}) {
   return (
     <div className="pre-lobby">
@@ -60,20 +70,55 @@ function PreLobby({submit}) {
   );
 }
 
-function ChatHistory({messages}) {
-  return(
-    <h4>{JSON.stringify(messages)}</h4>
-  )
+function ChatHistory({messages, session}) {
+  function renderMsg(chat){
+    if (chat.message){
+      if(chat.sender == session.name){
+        return (
+          <ListGroup.Item>
+            <div className="sent">
+              <strong>You</strong>
+              <p>{chat.message}</p>
+            </div>
+          </ListGroup.Item>
+        );
+      } else {
+        return (
+          <ListGroup.Item>
+            <div className="recieved">
+              <strong>{chat.sender}</strong>
+              <p>{chat.message}</p>
+            </div>
+          </ListGroup.Item>
+        );
+      }
+
+    }
+
+  }
+
+  const listItems = messages.map((msg) => renderMsg(msg));
+  return (
+    <Container>
+      <ListGroup>
+        {listItems}
+      </ListGroup>
+    </Container>
+  );
 }
 
-const MessageChat = connect(({ messages }) => ({ messages }))(ChatHistory);
+function state2props({ messages, session }) {
+  return { messages, session };
+}
+
+const MessageChat =  connect(state2props)(ChatHistory);
 
 function ActiveChat({ token, userId }) {
   const [msgText, setMsgText] = useState("");
 
   function send() {
-    console.log(reset)
     ch_push("sendChatMessage", { message: msgText, token: token });
+    setMsgText("")
   }
 
   // Update functions based on code from lecture from 2021-01-29:
@@ -90,46 +135,44 @@ function ActiveChat({ token, userId }) {
   }
 
   function reset(){
-        console.log("LEAVING CHANNEL");
-        console.log(token, userId)
         ch_push("chatUserLeft", { message: "", token: token });
         ch_leave();
         ch_join_lobby(userId, token);
   }
 
   let input_guess = (
-    <div className="row">
-      <div className="column column-60">
+    <Row>
+      <Col>
         <input
           type="text"
           value={msgText}
           onChange={updateGuess}
           onKeyPress={keyPress}
+          className="text-input"
         />
-      </div>
-      <div className="column">
-        <button onClick={send}>Send</button>
-      </div>
-      <div className="column">
-        <button
+      </Col>
+      <Col className="send-button">
+        <Button onClick={send}>Send</Button>
+      </Col>
+      <Col className="leave-channel-button">
+        <Button
           onClick={() => {
             reset();
             setMsgText("");
           }}
         >
           Leave Channel
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Col>
+    </Row>
   );
 
   return (
-    <div>
-      <h1>Bulls</h1>
-      <p>Guess a 4 digit number:</p>
+    <Container>
+      <h2>Chat Channel</h2>
       {input_guess}
       <MessageChat />
-    </div>
+    </Container>
   );
 }
 
@@ -139,12 +182,14 @@ function Chat({ messages, session }) {
   const [chatState, setChatState] = useState(0);
 
   function enterLobby(){
-    setChatState(1);
-    ch_join_lobby(session.user_id, session.token)
+    if (session){
+      setChatState(1);
+      ch_join_lobby(session.user_id, session.token);
+    }
+
   }
 
   function matchFound(){
-    console.log(chatState)
     if (chatState == "chatUserLeft"){
       setChatState(0);
     }
@@ -156,7 +201,9 @@ function Chat({ messages, session }) {
     setChatState(0)
   }
 
-  if (chatState == 0) {
+  if (session == null){
+    return <NotLoggedIn />;
+  } else if (chatState == 0) {
     return <PreLobby submit={enterLobby}/>;
   } else if (messages.length > 0 && messages[0].matchId && chatState == 1) {
     matchFound()
@@ -175,8 +222,8 @@ function Chat({ messages, session }) {
   }
 }
 
-function state2props({ messages, session }) {
+function state2props2({ messages, session }) {
   return { messages, session };
 }
 
-export default connect(state2props)(Chat);
+export default connect(state2props2)(Chat);

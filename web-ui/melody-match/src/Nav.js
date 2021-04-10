@@ -40,6 +40,7 @@ function SessionInfo({ session }) {
     console.log("LOGGING OUT")
     ev.preventDefault();
     store.dispatch({ type: "session/clear" });
+    store.dispatch({ type: "spotifyToken/clear"});
   }
 
   return (
@@ -70,7 +71,7 @@ function Link({ to, children }) {
   );
 }
 
-function AppNav({ error }) {
+function AppNav({ error, session }) {
   let error_row = null;
 
   if (error) {
@@ -83,24 +84,47 @@ function AppNav({ error }) {
     );
   }
 
-  return (
-    <div>
-      <Row className="nav">
-        <Col>
-          <Nav variant="tabs">
-            <Link to="/">Lobby</Link>
-            <Link to="/matches">My Previous Matches</Link>
-            <Link to="/tracks">My Top Tracks</Link>
-            <Link to="/user"> My Profile</Link>
-          </Nav>
-        </Col>
-        <Col>
-          <LoginOrInfo />
-        </Col>
-      </Row>
-      {error_row}
-    </div>
-  );
+  if (session){
+    return (
+      <div>
+        <Row className="nav">
+          <Col>
+            <Nav variant="tabs">
+              <Link to="/">Lobby</Link>
+              <Link to="/matches">My Previous Matches</Link>
+              <Link to="/tracks">My Top Tracks</Link>
+              <Link to="/user"> My Profile</Link>
+            </Nav>
+          </Col>
+          <Col>
+            <LoginOrInfo />
+          </Col>
+        </Row>
+        {error_row}
+      </div>
+    );
+  } else{
+    return (
+      <div>
+        <Row className="nav">
+          <Col>
+            <Nav variant="tabs">
+              <Link to="/">Home</Link>
+            </Nav>
+          </Col>
+          <Col>
+            <LoginOrInfo />
+          </Col>
+        </Row>
+        {error_row}
+      </div>
+    );
+  }
+
 }
 
-export default connect(({ error }) => ({ error }))(AppNav);
+function state2props({ error, session }) {
+  return { error, session };
+}
+
+export default connect(state2props)(AppNav);

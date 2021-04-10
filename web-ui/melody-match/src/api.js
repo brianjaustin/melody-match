@@ -42,7 +42,6 @@ export async function api_patch(path, data, token=null) {
 
 export function api_login(email, password, latitude, longitude) {
   api_post("/session", { email, password, latitude, longitude }).then((data) => {
-    console.log("login resp", data);
     if (data.session) {
       let action = {
         type: "session/set",
@@ -50,7 +49,6 @@ export function api_login(email, password, latitude, longitude) {
       };
       store.dispatch(action);
     } else if (data.error) {
-      console.log(data.error);
       let action = {
         type: "error/set",
         data: data.error,
@@ -75,15 +73,13 @@ export function fetch_users(user_id=-1, token=null) {
 
 export function fetch_tracks(user_id=-1, token=null) {
   if (user_id > -1) {
-    console.log(`FETCHING ACTUAL TRACKS FOR USER ${user_id}`);
-    api_get(`/users/${user_id}/top_songs`, token).then((data) =>
+    api_get(`/users/${user_id}/top_songs`, token).then((data) => {
       store.dispatch({
         type: "tracks/set",
-        data: data,
+        data: data.items,
       })
-    );
+    });
   } else {
-    console.log("NO MATCHES YET");
     store.dispatch({ type: "tracks/set", data: [] });
   }
 }
@@ -91,7 +87,6 @@ export function fetch_tracks(user_id=-1, token=null) {
 export function fetch_previous_matches(user_id=-1, token=null){
 
   if (user_id > -1){
-    console.log(`FETCHING ACTUAL MATCHES FOR USER ${user_id}`)
     api_get(`/users/${user_id}/matches`, token).then((data) =>
       store.dispatch({
         type: "matches/set",
@@ -99,7 +94,6 @@ export function fetch_previous_matches(user_id=-1, token=null){
       })
     );
   } else {
-    console.log("NO MATCHES YET")
     store.dispatch({type: "matches/set", data: []})
   }
 

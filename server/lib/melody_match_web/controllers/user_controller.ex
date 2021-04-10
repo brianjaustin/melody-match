@@ -41,9 +41,12 @@ defmodule MelodyMatchWeb.UserController do
 
   def proxy(conn, %{"id" => id}) do
     result = Spotify.get_spotify_data(id)
-    conn
-    |> put_view(MelodyMatchWeb.SpotifyView)
-    |> render("show.json", spotify: result)
+    with {:ok, result} <- Spotify.get_spotify_data(id, 10) do
+      conn
+        |> put_view(MelodyMatchWeb.SpotifyView)
+        |> render("show.json", result: result)
+    end
+
   end
 
   def create(conn, %{"name" => name, "email" => email, "password" => password}) do

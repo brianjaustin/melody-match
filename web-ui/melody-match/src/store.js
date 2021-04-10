@@ -3,7 +3,6 @@ import { createStore, combineReducers } from "redux";
 function users(state = [], action) {
   switch (action.type) {
     case "users/set":
-      console.log(action.data, "UPDATING USERS")
       return action.data;
     default:
       return state;
@@ -50,10 +49,12 @@ function messages(state=[], action) {
   }
 }
 
-function spotifyToken(state = [], action) {
+function spotifyToken(state = null, action) {
   switch (action.type) {
     case "spotifyToken/set":
       return action.data;
+    case "spotifyToken/clear":
+      return null;
     default:
       return state;
   }
