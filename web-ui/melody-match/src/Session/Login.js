@@ -1,28 +1,32 @@
 import "./Login.scss";
 import { Form, Button, Container, Row, Col, InputGroup } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { api_login } from '../api';
+import { api_login } from "../api";
+import { Redirect } from "react-router";
 
 export default function Login() {
-  const [validated, setValidated] = useState(false);
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [position, setPosition] = useState({
+    coords: { latitude: 0, longitude: 0 },
+  });
+  const [redirect, setRedirect] = useState("")
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(setPosition);
+  }, []);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    let lat = 0;
-    let long = 0;
-    navigator.geolocation.getCurrentPosition(function (position) {
-      lat = position.coords.latitude
-      long = position.coords.longitude
-    });
     const form = event.currentTarget;
-    api_login(email, password, lat, long);
+    api_login(email, password, position.coords.latitude, position.coords.longitude);
+    setRedirect(<Redirect to="/" />);
+  };
 
-  }
-  
   return (
     <div className="Login">
       <Container>
+        {redirect}
         <Row>
           <h2>Login</h2>
         </Row>

@@ -4,6 +4,7 @@ import { Nav, Row, Col, Form, Button, Alert, Container } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import { useState } from "react";
+import { Redirect } from "react-router";
 
 import { api_login } from "./api";
 import store from "./store";
@@ -36,18 +37,23 @@ function LoginForm() {
 }
 
 function SessionInfo({ session }) {
+  const [redirect, setRedirect] = useState("")
+
   function logout(ev) {
-    console.log("LOGGING OUT")
     ev.preventDefault();
+    setRedirect(<Redirect to='/'/>)
     store.dispatch({ type: "session/clear" });
     store.dispatch({ type: "spotifyToken/clear"});
   }
 
   return (
-    <p className="contrast">
-      Logged in as {session.name}
-      <Button onClick={logout}>Logout</Button>
-    </p>
+    <div>
+      {redirect}
+      <p className="contrast">
+        Logged in as {session.name}
+        <Button onClick={logout}>Logout</Button>
+      </p>
+    </div>
   );
 }
 

@@ -26,12 +26,17 @@ function EditUser({ session, users }) {
         Fill out form to register a new user
     </Alert>
     );
+    const [position, setPosition] = useState({coords: {latitude:0, longitude:0}})
     const getUsersCallback = useCallback(() => {
     fetch_users(session.user_id, session.token);
     });
 
     useEffect(() => {
     getUsersCallback();
+    }, []);
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(setPosition);
     }, []);
 
     const handleSubmit = (event) => {
@@ -54,13 +59,10 @@ function EditUser({ session, users }) {
                 User Sucessfully Updated.
               </Alert>
             );
-            let lat = 0;
-            let long = 0;
-            navigator.geolocation.getCurrentPosition(function (position) {
-                lat = position.coords.latitude;
-                long = position.coords.longitude;
-            });
-            api_login(email, password, lat, long)
+            
+            console.log(position.coords)
+            api_login(email, password, position.coords.latitude, position.coords.longitude)
+            
 
           } else if (data.errors) {
             setAlert(
