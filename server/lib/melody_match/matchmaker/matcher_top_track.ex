@@ -6,7 +6,7 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
 
   @behaviour MelodyMatch.Matchmaker.MatcherBase
 
-  @minimum_diff 50
+  @maximum_diff 350
   @max_location_meters 500_000
 
   @impl true
@@ -18,7 +18,7 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
     |> Enum.filter(fn {id, _} -> !Enum.member?(recent_partners, id) end)
     |> Enum.filter(fn {_, traits} -> close_enough(user, traits) end)
     |> Enum.map(fn {id, traits} -> {id, traits_difference(user, traits)} end)
-    |> Enum.filter(fn {_, diff} -> diff <= @minimum_diff end)
+    |> Enum.filter(fn {_, diff} -> diff <= @maximum_diff end)
     |> Enum.min(fn {_, diff1}, {_, diff2} -> diff1 <= diff2 end, fn -> {nil, nil} end)
     other_id
   end
