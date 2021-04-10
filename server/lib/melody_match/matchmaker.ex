@@ -100,8 +100,21 @@ defmodule MelodyMatch.Matchmaker do
     |> Repo.preload(:top_track)
 
     if user.top_track do
-      user.top_track
-      |> Enum.into(%{latitude: user.last_latitude, longitude: user.last_longitude})
+      track = user.top_track
+      %{
+        acousticness: track.acousticness,
+        danceability: track.danceability,
+        energy: track.energy,
+        instrumentalness: track.instrumentalness,
+        liveness: track.liveness,
+        loudness: track.loudness,
+        mode: track.mode,
+        speechiness: track.speechiness,
+        tempo: track.tempo,
+        valence: track.valence,
+        latitude: user.last_latitude,
+        longitude: user.last_longitude
+      }
     else
       %{
         acousticness: 0.0,
