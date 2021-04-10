@@ -93,6 +93,7 @@ function session(state = restore_session(), action) {
 }
 
 function root_reducer(state, action) {
+  console.log("root_reducter", state)
   let reducer = combineReducers({
     users,
     user_form,

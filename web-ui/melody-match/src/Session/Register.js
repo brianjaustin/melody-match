@@ -3,6 +3,7 @@ import { Form, Button, Container, Row, Col, InputGroup, Alert} from "react-boots
 import React, {useEffect, useState} from 'react';
 import { api_post } from "../api";
 import { connect } from "react-redux";
+import store from "../store";
 
 export const authEndpoint = "https://accounts.spotify.com/authorize";
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -25,6 +26,14 @@ function Register({spotifyToken}) {
       Fill out form to register a new user
     </Alert>
   );
+  const [position, setPosition] = useState({
+    coords: { latitude: 0, longitude: 0 },
+  });
+
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(setPosition);
+  }, []);
 
   let errorMessage=""
 
@@ -54,16 +63,39 @@ function Register({spotifyToken}) {
               User sucessfully created.
             </Alert>
           );
-          api_post(`/users/${data.data.id}/spotify_token`, {
-            auth_code: spotifyToken,
-            redirect_uri: "https://melody-match.baustin-neu.site",
-          }).then((data) => {
-              setAlert(
-                <Alert key="registration_response" variant="success">
-                  User Created and Spotify Token added.
-                </Alert>
-              );
+          const latitude = position.coords.latitude
+          const longitude = position.coords.longitude
+          api_post("/session", { email, password, latitude, longitude }).then((session_data) => {
+            if (session_data.session) {
+              let action = {
+                type: "session/set",
+                data: session_data.session,
+              };
+              store.dispatch(action);
+              api_post(
+                `/users/${data.data.id}/spotify_token`,
+                {
+                  auth_code: spotifyToken,
+                  redirect_uri: "https://melody-match.baustin-neu.site",
+                },
+                session_data.session.token
+              ).then((data) => {
+                setAlert(
+                  <Alert key="registration_response" variant="success">
+                    User Created and Spotify Token added.
+                  </Alert>
+                );
+              });
+            } else if (data.error) {
+              let action = {
+                type: "error/set",
+                data: data.error,
+              };
+              store.dispatch(action);
+            }
           });
+
+
 
         } else if (data.errors) {
           setAlert(
@@ -195,8 +227,8 @@ function Register({spotifyToken}) {
   );
 }
 
-function state2props({ spotifyToken }) {
-  return { spotifyToken };
+function state2props({ spotifyToken, session }) {
+  return { spotifyToken, session };
 }
 
 export default connect(state2props)(Register);
