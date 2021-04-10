@@ -4,6 +4,7 @@
 export SECRET_KEY_BASE=insecure
 export MIX_ENV=prod
 export PORT=4800
+export SPOTIFY_CLIENT_ID=135bad1f37bc489b95aa2c2d2e7fd4c6
 
 # Setup secret config file.
 # From lecture notes
@@ -15,7 +16,9 @@ if [ ! -d "$CFGD" ]; then
 fi
 
 DATABASE_URL=$(cat "$CFGD/postgres")
+SPOTIFY_CLIENT_SECRET=$(cat "$CFGD/spotify")
 export DATABASE_URL
+export SPOTIFY_CLIENT_SECRET
 
 echo "Building..."
 
