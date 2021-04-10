@@ -50,8 +50,7 @@ defmodule MelodyMatchWeb.UserController do
   end
 
   def create(conn, %{"name" => name, "email" => email, "password" => password}) do
-    hashed = Argon2.add_hash(password)
-    updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash}
+    updated_params = %{name: name, email: email, password: password}
     with {:ok, %User{} = user} <- Accounts.create_user(updated_params) do
       conn
       |> put_status(:created)
@@ -67,17 +66,30 @@ defmodule MelodyMatchWeb.UserController do
 
   def update(conn, %{"id" => id, "name" => name, "email" => email, "password" => password}) do
     user = Accounts.get_user!(id)
-    hashed = Argon2.add_hash(password)
-    updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash}
-    with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
-      render(conn, "show.json", user: user)
+    if not blank?(password) do
+      hashed = Argon2.add_hash(password)
+      updated_params = %{name: name, email: email, password: password, password_hash: hashed.password_hash}
+      with {:ok, %User{} = user} <- Accounts.update_password(user, updated_params) do
+        with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
+          render(conn, "show.json", user: user)
+        end
+      end
+    else
+      updated_params = %{name: name, email: email}
+      with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
+        render(conn, "show.json", user: user)
+      end
     end
   end
+
+  defp blank?(nil), do: true
+  defp blank?(""), do: true
+  defp blank?(_), do: false
 
   def update(conn, %{"id" => id, "last_latitude" => lat, "last_longitude" => long}) do
     user = Accounts.get_user!(id)
     updated_params = %{last_latitude: lat, last_longitude: long}
-    with {:ok, %User{} = user} <- Accounts.update_user(user, updated_params) do
+    with {:ok, %User{} = user} <- Accounts.update_password(user, updated_params) do
       render(conn, "show.json", user: user)
     end
   end

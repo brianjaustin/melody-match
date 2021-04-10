@@ -8,7 +8,9 @@ defmodule MelodyMatchWeb.SpotifyTokenController do
 
   action_fallback MelodyMatchWeb.FallbackController
 
-  plug :require_owner when action in [:update, :delete]
+  plug MelodyMatchWeb.Plugs.RequireToken when action in [:create, :update, :delete]
+
+  plug :require_owner when action in [:create, :update, :delete]
 
   def require_owner(conn, _params) do
     user_id = String.to_integer(conn.params["id"])
