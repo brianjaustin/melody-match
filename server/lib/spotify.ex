@@ -42,6 +42,7 @@ defmodule Spotify do
       top_track_id = get_top_song_id(user_id)
       top_song = get_top_song_info(user_id, top_track_id)
       top_track = %{user_id: String.to_integer(user_id), 
+                    track_id: top_song["id"],
                     acousticness: top_song["acousticness"],
                     danceability: top_song["danceability"],
                     energy: top_song["energy"],
