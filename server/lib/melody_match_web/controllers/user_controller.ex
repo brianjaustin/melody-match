@@ -11,12 +11,10 @@ defmodule MelodyMatchWeb.UserController do
   plug :require_owner when action in [:proxy, :matches, :update, :delete]
 
   def require_owner(conn, _params) do
-    IO.inspect conn
     user_id = String.to_integer(conn.params["id"])
     user = Accounts.get_user!(user_id)
 
     current_user = conn.assigns[:current_user]
-    IO.inspect current_user
 
     if current_user && current_user.id == user.id do
       conn

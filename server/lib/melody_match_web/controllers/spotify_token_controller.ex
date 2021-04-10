@@ -11,7 +11,6 @@ defmodule MelodyMatchWeb.SpotifyTokenController do
   plug :require_owner when action in [:update, :delete]
 
   def require_owner(conn, _params) do
-    IO.inspect conn.params
     user_id = String.to_integer(conn.params["id"])
     user = Accounts.get_user!(user_id)
 
@@ -30,7 +29,6 @@ defmodule MelodyMatchWeb.SpotifyTokenController do
   end
 
   def create(conn, %{"id" => id, "auth_code" => auth_code, "redirect_uri" => red_uri}) do
-    IO.puts "got to token creation"
     with {:ok, %SpotifyToken{} = spotify_token} <- Spotify.get_and_save_tokens(id, :code, auth_code, red_uri) do
       send_resp(conn, :no_content, "")
     end

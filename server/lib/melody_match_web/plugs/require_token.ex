@@ -15,15 +15,10 @@ defmodule MelodyMatchWeb.Plugs.RequireToken do
 
   def call(conn, _args) do
     token = Enum.at(get_req_header(conn, "x-auth"), 0)
-    IO.inspect conn
-    IO.inspect token
-    IO.inspect Phoenix.Token.verify(conn, "user_id", token, max_age: 86400)
     case Phoenix.Token.verify(conn, "user_id", token, max_age: 86400) do
       {:ok, user_id} ->
-        IO.puts "valid token"
         assign(conn, :current_user, Accounts.get_user!(user_id))
       {:error, _err} ->
-        IO.puts "invalid token"
         conn
         |> put_status(:unauthorized)
         |> Phoenix.Controller.put_view(MelodyMatchWeb.ErrorView)

@@ -24,16 +24,12 @@ defmodule Spotify do
     url = "https://accounts.spotify.com/api/token"
 
     client_id = Application.get_env(:melody_match, :spotify)[:client_id]
-    IO.puts redirect_uri
-    IO.puts client_id
     body = {:form, [
       {"grant_type", "authorization_code"},
       {"code", code},
       {"redirect_uri", redirect_uri}
     ]}
-    IO.puts "ready to post to spotify"
     response = HTTPoison.post!(url, body, auth_headers())
-    IO.inspect response
     if response.status_code == 200 do
       toks = Jason.decode!(response.body)
       # TODO: make this be an upsert? and remove the update function
@@ -80,17 +76,12 @@ defmodule Spotify do
   defp auth_headers() do
     client_id = Application.get_env(:melody_match, :spotify)[:client_id]
     client_secret = Application.get_env(:melody_match, :spotify)[:client_secret]
-    IO.puts client_id
-    IO.write client_secret
     auth = Base.encode64("#{String.trim(client_id)}:#{String.trim(client_secret)}")
-    test = Base.encode64("#{client_id}")
-    IO.puts test
     ["Authorization": "Basic #{auth}", "Content-Type": "application/x-www-form-urlencoded"]
   end
 
   def get_top_songs(user_id, limit \\ 1, retries \\ 1) do
     tokens = Accounts.get_user_spotify_token!(user_id)
-    IO.puts tokens.auth_token
     url = "https://api.spotify.com/v1/me/top/tracks?limit=#{limit}"
     headers = ["Authorization": "Bearer #{tokens.auth_token}"]
     response = HTTPoison.get!(url, headers)

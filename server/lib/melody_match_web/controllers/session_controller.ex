@@ -5,8 +5,6 @@ defmodule MelodyMatchWeb.SessionController do
   def create(conn, %{"email" => email, "password" => password, "latitude" => lat, "longitude" => long}) do
     user = MelodyMatch.Accounts.authenticate(email, password)
 
-    IO.inspect user
-
     if user do
       updated_params = %{last_latitude: lat, last_longitude: long}
       Accounts.update_user(user, updated_params)
