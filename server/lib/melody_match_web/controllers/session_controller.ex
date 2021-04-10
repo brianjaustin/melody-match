@@ -6,7 +6,7 @@ defmodule MelodyMatchWeb.SessionController do
     user = MelodyMatch.Accounts.authenticate(email, password)
 
     if user do
-      updated_params = %{last_latitude: lat, last_longitude: long}
+      updated_params = %{last_latitude: "#{lat}", last_longitude: "#{long}"}
       Accounts.update_user(user, updated_params)
         sess = %{
           user_id: user.id,
