@@ -41,8 +41,7 @@ defmodule Spotify do
       })
       top_track_id = get_top_song_id(user_id)
       top_song = get_top_song_info(user_id, top_track_id)
-      IO.inspect top_song
-      top_track = %{user_id: user_id, 
+      top_track = %{user_id: String.to_integer(user_id), 
                     acousticness: top_song["acousticness"],
                     danceability: top_song["danceability"],
                     energy: top_song["energy"],
@@ -53,6 +52,7 @@ defmodule Spotify do
                     speechiness: top_song["speechiness"],
                     tempo: top_song["tempo"],
                     valence: top_song["valence"]}
+      IO.inspect top_track
       Tracks.create_top_track(top_track)
     else
       {:error, response.status_code, response.body}
