@@ -54,7 +54,7 @@ function Register({spotifyToken}) {
           );
           api_post(`/users/${data.data.id}/spotify_token`, {
             auth_code: spotifyToken,
-            redirect_uri: "http://localhost:3000",
+            redirect_uri: "https://melody-match.baustin-neu.site",
           }).then((data) => {
               setAlert(
                 <Alert key="registration_response" variant="success">
