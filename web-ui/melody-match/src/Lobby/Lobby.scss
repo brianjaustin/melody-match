@@ -1,0 +1,56 @@
+@import "~bootstrap/scss/bootstrap";
+
+.spinner{
+    height:200px;
+    margin: 20px;
+}
+
+.pre-lobby {
+    margin: 50px;
+}
+
+p {
+    color:black;
+}
+
+.sent {
+    text-align: right;
+    width: 60%;
+    float: right;
+    padding: 10px;
+    background-color: #35C04A;
+    color: white;
+    border-radius: 10px;
+
+}
+
+.sent > p {
+    color: white;
+}
+
+.recieved {
+    text-align: left;
+    width: 60%;
+    float: left;
+    padding: 10px;
+    background-color: #1C8AD9;
+    color: white;
+    border-radius: 10px;
+}
+
+.recieved > p {
+    color: white;
+}
+
+.send-button {
+    max-width: 70px !important;
+    padding-right: 0px;
+}
+
+.leave-channel-button {
+    max-width: 170px !important;
+}
+
+.text-input {
+    width:100%;
+}

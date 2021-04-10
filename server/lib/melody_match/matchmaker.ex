@@ -134,6 +134,7 @@ defmodule MelodyMatch.Matchmaker do
   defp matcher(), do: Application.get_env(:melody_match, :default_matcher)
 
   defp send_match_found(user_id, match_id) do
+    IO.puts "Broadcasting matches #{user_id} match Found"
     MelodyMatchWeb.Endpoint.broadcast(
       "matchmaker:#{user_id}",
       "matchFound",

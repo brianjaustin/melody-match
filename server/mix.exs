@@ -49,6 +49,7 @@ defmodule MelodyMatch.MixProject do
       {:not_qwerty123, "~> 2.3"},
       {:httpoison, "~> 1.8"},
       {:mox, "~> 1.0"},
+      {:cors_plug, "~> 2.0"}
       {:geocalc, "~> 0.8"}
     ]
   end

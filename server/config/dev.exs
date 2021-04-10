@@ -20,13 +20,9 @@ c_id =
 c_sec =
   System.get_env("SPOTIFY_CLIENT_SECRET") || ""
 
-red_uri = 
-  System.get_env("SPOTIFY_REDIRECT_URI") || ""
-
 config :melody_match, :spotify,
   client_id: c_id,
-  client_secret: c_sec,
-  redirect_uri: red_uri
+  client_secret: c_sec
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -93,3 +89,25 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Allow requests from local react
+config :cors_plug,
+  origin: ["http://localhost:3000"],
+  max_age: 86400,
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  headers: [
+    "Authorization",
+    "Content-Type",
+    "Accept",
+    "Origin",
+    "User-Agent",
+    "DNT",
+    "Cache-Control",
+    "X-Mx-ReqToken",
+    "Keep-Alive",
+    "X-Requested-With",
+    "If-Modified-Since",
+    "X-CSRF-Token",
+    "x-auth"
+  ]
+

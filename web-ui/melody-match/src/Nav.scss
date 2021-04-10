@@ -1,0 +1,20 @@
+@import "~bootstrap/scss/bootstrap";
+
+.nav {
+    background-color: #071013;
+    color: #071013 !important;
+
+}
+
+.nav-item > a{
+        color: #F7F3E3;
+}
+
+.login-or-register > button{
+    margin: auto;
+    width: 50%;
+}
+
+.contrast {
+    color: #F7F3E3;
+}
