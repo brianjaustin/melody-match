@@ -7,7 +7,7 @@ let channel = null;
 
 // Uncomment for local dev
 // const server_url = "ws://localhost:4000/socket";
-const server_url = "ws://melody-match.baustin-neu.site/socket";
+const server_url = "wss://melody-match.baustin-neu.site/socket";
 
 function store_update(st){
   let action = {
