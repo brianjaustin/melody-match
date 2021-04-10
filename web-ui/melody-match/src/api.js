@@ -1,17 +1,25 @@
 import store from "./store";
 import * as $ from "jquery";
 
-export async function api_get(path, params={}) {
-  let text = await fetch("http://localhost:4000/api/v1" + path, params);
+export async function api_get(path, token=null) {
+  let opts = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth": token
+    }
+  };
+  let text = await fetch("http://localhost:4000/api/v1" + path, opts);
   let resp = await text.json();
   return resp.data;
 }
 
-export async function api_post(path, data) {
+export async function api_post(path, data, token=null) {
   let opts = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "x-auth": token
     },
     body: JSON.stringify(data),
   };
@@ -19,11 +27,12 @@ export async function api_post(path, data) {
   return await resp.json();
 }
 
-export async function api_patch(path, data) {
+export async function api_patch(path, data, token=null) {
   let opts = {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      "x-auth": token
     },
     body: JSON.stringify(data),
   };
@@ -53,7 +62,7 @@ export function api_login(email, password, latitude, longitude) {
 
 export function fetch_users(user_id=-1, token=null) {
   if (user_id > -1) {
-    api_get(`/users/${user_id}`, {token: token}).then((data) =>
+    api_get(`/users/${user_id}`, token).then((data) =>
       store.dispatch({
         type: "users/set",
         data: data,
@@ -67,7 +76,7 @@ export function fetch_users(user_id=-1, token=null) {
 export function fetch_tracks(user_id=-1, token=null) {
   if (user_id > -1) {
     console.log(`FETCHING ACTUAL TRACKS FOR USER ${user_id}`);
-    api_get(`/users/${user_id}/top_songs`, {token: token}).then((data) =>
+    api_get(`/users/${user_id}/top_songs`, token).then((data) =>
       store.dispatch({
         type: "tracks/set",
         data: data,
@@ -83,7 +92,7 @@ export function fetch_previous_matches(user_id=-1, token=null){
 
   if (user_id > -1){
     console.log(`FETCHING ACTUAL MATCHES FOR USER ${user_id}`)
-    api_get(`/users/${user_id}/matches`, {token: token}).then((data) =>
+    api_get(`/users/${user_id}/matches`, token).then((data) =>
       store.dispatch({
         type: "matches/set",
         data: data,

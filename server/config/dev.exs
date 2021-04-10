@@ -84,3 +84,25 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Allow requests from local react
+config :cors_plug,
+  origin: ["http://localhost:3000"],
+  max_age: 86400,
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  headers: [
+    "Authorization",
+    "Content-Type",
+    "Accept",
+    "Origin",
+    "User-Agent",
+    "DNT",
+    "Cache-Control",
+    "X-Mx-ReqToken",
+    "Keep-Alive",
+    "X-Requested-With",
+    "If-Modified-Since",
+    "X-CSRF-Token",
+    "x-auth"
+  ]
+
