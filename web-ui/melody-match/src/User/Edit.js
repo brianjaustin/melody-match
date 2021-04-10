@@ -42,7 +42,6 @@ function EditUser({ session, users }) {
     }
 
     if (password == confirmPassword) {
-        console.log(session.token)
       api_patch(
         `/users/${session.user_id}`,
         {
@@ -59,7 +58,6 @@ function EditUser({ session, users }) {
             </Alert>
           );
 
-          console.log(position.coords);
           api_login(
             email,
             password,
