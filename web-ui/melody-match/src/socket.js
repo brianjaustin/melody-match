@@ -5,6 +5,10 @@ let socket = null;
 
 let channel = null;
 
+// Uncomment for local dev
+// const server_url = "ws://localhost:4000/socket";
+const server_url = "ws://melody-match.baustin-neu.site/socket";
+
 function store_update(st){
   let action = {
     type: "messages/append",
@@ -32,7 +36,7 @@ export function message_clear(){
 
 export function ch_join_lobby(user_id, token) {
   message_clear();
-  socket = new Socket("ws://localhost:4000/socket", {
+  socket = new Socket(server_url, {
     params: { token: "" },
   });
   socket.connect();
@@ -46,7 +50,7 @@ export function ch_join_lobby(user_id, token) {
 
 export function ch_start(match_id, token) {
   if (channel == null){
-      socket = new Socket("ws://localhost:4000/socket", {
+      socket = new Socket(server_url, {
         params: { token: "" },
       });
       socket.connect();
