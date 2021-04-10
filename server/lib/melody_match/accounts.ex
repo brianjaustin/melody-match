@@ -174,7 +174,7 @@ defmodule MelodyMatch.Accounts do
   def create_spotify_token(attrs \\ %{}) do
     %SpotifyToken{}
     |> SpotifyToken.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(on_conflict: :replace_all, conflict_target: [:user_id])
   end
 
   @doc """

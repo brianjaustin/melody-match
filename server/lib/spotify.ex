@@ -7,6 +7,7 @@ defmodule Spotify do
   """
 
   alias MelodyMatch.Accounts
+  alias MelodyMatch.Tracks
 
   @doc """
   Given a user id and an authorization code (fetched somewhere else,
@@ -38,8 +39,20 @@ defmodule Spotify do
         auth_token: toks["access_token"],
         refresh_token: toks["refresh_token"]
       })
-      top_track = get_top_songs(user_id)
-      IO.inspect top_track
+      top_track_id = get_top_song_id(user_id)
+      top_song = get_top_song_info(user_id, top_track_id)
+      IO.inspect top_song
+      top_track = %{user_id: user_id, 
+                    acousticness: top_song["acousticness"],
+                    danceability: top_song["danceability"],
+                    energy: top_song["energy"],
+                    instrumentalness: top_song["instrumentalness"],
+                    liveness: top_song["liveness"],
+                    loudness: top_song["loudness"],
+                    mode: top_song["mode"],
+                    speechiness: top_song["speechiness"],
+                    tempo: top_song["tempo"],
+                    valence: top_song["valence"]}
       Tracks.create_top_track(top_track)
     else
       {:error, response.status_code, response.body}
@@ -83,10 +96,33 @@ defmodule Spotify do
     ["Authorization": "Basic #{auth}", "Content-Type": "application/x-www-form-urlencoded"]
   end
 
- def get_top_songs(user_id, limit \\ 1, retries \\ 1) do
+ def get_top_song_id(user_id, limit \\ 1, retries \\ 1) do
     tokens = Accounts.get_user_spotify_token!(user_id)
 
     url = "https://api.spotify.com/v1/me/top/tracks?limit=#{limit}"
+    headers = ["Authorization": "Bearer #{tokens.auth_token}"]
+    response = HTTPoison.get!(url, headers)
+    cond do
+      response.status_code == 200 ->
+        songs = response.body
+        |> Jason.decode!()
+        |> Map.get("items")
+        |> hd()        
+        |> Map.get("id")
+        songs
+      retries > 0 ->
+        get_and_save_tokens(tokens.user_id, :refresh)
+        get_top_song_id(user_id, limit, retries - 1)
+      true ->
+        {:error, response.status_code, "Error fetching top tracks."}
+    end
+  end
+
+ def get_top_song_info(user_id, track_id, retries \\ 1) do
+    tokens = Accounts.get_user_spotify_token!(user_id)
+
+    IO.puts "getting song info"
+    url = "https://api.spotify.com/v1/audio-features/#{track_id}"
     headers = ["Authorization": "Bearer #{tokens.auth_token}"]
     response = HTTPoison.get!(url, headers)
 
@@ -94,15 +130,14 @@ defmodule Spotify do
       response.status_code == 200 ->
         songs = response.body
         |> Jason.decode!()
-        |> Map.get("items")
         songs
       retries > 0 ->
-        get_and_save_tokens(tokens.user_id, :refresh)
-        get_top_songs(user_id, limit, retries - 1)
+        get_top_song_info(user_id, track_id, retries - 1)
       true ->
-        {:error, response.status_code, "Error fetching top tracks."}
+        {:error, response.status_code, "Error fetching track info."}
     end
   end
+
 
   def get_spotify_data(user_id, limit \\ 1, retries \\ 1) do
     tokens = Accounts.get_user_spotify_token!(user_id)
