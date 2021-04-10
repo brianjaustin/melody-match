@@ -18,7 +18,7 @@ function EditUser({ session, users }) {
   const [email, setEmail] = useState(users.email);
   const [alert, setAlert] = useState(
     <Alert key="registration_response" variant="primary">
-      Fill out form to register a new user
+      Edit Information and press submit to edit user information.
     </Alert>
   );
   const [position, setPosition] = useState({

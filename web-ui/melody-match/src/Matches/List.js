@@ -12,19 +12,27 @@ function MatchList({ matches, session }) {
     getMatchesCallback();
   }, []);
 
-  function rendermatch(match){
+  function rendermatch(match) {
+    if (match.users[0].name == session.name) {
       return (
-          <tr>
-              <td>{match.id}</td>
-              <td>{match.users[0].name}:{match.users[0].email}</td>
-              <td>{match.users[1].name}:{match.users[1].email}</td>
-          </tr>
-      )
+        <tr>
+          <td>{match.id}</td>
+          <td>{match.users[1].name}</td>
+          <td>{match.users[1].email}</td>
+        </tr>
+      );
+    } else {
+      return (
+        <tr>
+          <td>{match.id}</td>
+          <td>{match.users[0].name}</td>
+          <td>{match.users[0].email}</td>
+        </tr>
+      );
+    }
   }
 
   const listItems = matches.map((match) => rendermatch(match));
-
-  
 
   return (
     <div className="Tracks">
@@ -38,9 +46,7 @@ function MatchList({ matches, session }) {
               <th>Email</th>
             </tr>
           </thead>
-          <tbody>
-            {listItems}
-          </tbody>
+          <tbody>{listItems}</tbody>
         </Table>
       </Container>
     </div>
