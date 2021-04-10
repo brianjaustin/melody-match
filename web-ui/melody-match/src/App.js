@@ -2,6 +2,7 @@ import "./App.scss";
 import { Container} from "react-bootstrap";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 
 import TrackList from "./Tracks/Tracks.js";
 import MatchList from "./Matches/List.js"
@@ -35,6 +36,7 @@ function App({session}) {
     token: false,
     tracks: false,
   });
+  const [redirect, setRedirect] = useState("")
   useEffect(() => {
     if (_token) {
       setState({ loggedIn: false, token: _token, tracks: false });
@@ -44,12 +46,16 @@ function App({session}) {
         };
         store.dispatch(action);
         if (session){
-          api_post(`/users/${session.user_id}/spotify_token`, {
-            auth_code: _token,
-            redirect_uri: "https://melody-match.baustin-neu.site",
-          },
-          session.token);
+          api_post(
+            `/users/${session.user_id}/spotify_token`,
+            {
+              auth_code: _token,
+              redirect_uri: "https://melody-match.baustin-neu.site",
+            },
+            session.token
+          );
         }
+        setRedirect(<Redirect to="/" />);
 
     }
   }, [_token]);
@@ -78,6 +84,7 @@ function App({session}) {
   );
   return (
     <Container fluid>
+      {redirect}
       <Nav />
       {body}
     </Container>
