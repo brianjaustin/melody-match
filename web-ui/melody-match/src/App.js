@@ -47,7 +47,8 @@ function App({session}) {
           api_post(`/users/${session.user_id}/spotify_token`, {
             auth_code: _token,
             redirect_uri: "http://localhost:3000",
-          });
+          },
+          session.token);
         }
 
     }

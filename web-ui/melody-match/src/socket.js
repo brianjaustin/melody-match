@@ -39,7 +39,7 @@ export function ch_join_lobby(user_id, token) {
   channel = socket.channel(`matchmaker:${user_id}`, {token: token});
   channel
     .join()
-    .receive("ok", state_update)
+    .receive("ok", console.log)
     .receive("error", (resp) => console.log("Unable to join matchmaker channel", resp));
   channel.on("matchFound", store_update);
 }
@@ -54,7 +54,7 @@ export function ch_start(match_id, token) {
   channel = socket.channel(`chat:${match_id}`, {token: token});
   channel
     .join()
-    .receive("ok", state_update("Joined Chat"))
+    .receive("ok", console.log)
     .receive("error", (resp) => console.log("Unable to join chat channel", resp));
   channel.on("receiveChatMessage", store_update);
   channel.on("chatUserLeft", ch_leave);
@@ -63,6 +63,6 @@ export function ch_start(match_id, token) {
 export function ch_push(type, msg) {
   channel
     .push(type, msg)
-    .receive("ok", state_update)
+    .receive("ok", console.log)
     .receive("error", (resp) => console.log("Unable to push", resp));
 }

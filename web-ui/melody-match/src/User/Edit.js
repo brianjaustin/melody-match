@@ -42,6 +42,7 @@ function EditUser({ session, users }) {
     }
 
     if (password == confirmPassword) {
+        console.log(session.token)
       api_patch(
         `/users/${session.user_id}`,
         {
