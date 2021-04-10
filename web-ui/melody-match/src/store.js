@@ -80,12 +80,17 @@ function restore_session() {
   }
 }
 
+function delete_session() {
+  localStorage.removeItem("session");
+}
+
 function session(state = restore_session(), action) {
   switch (action.type) {
     case "session/set":
       save_session(action.data);
       return action.data;
     case "session/clear":
+      delete_session();
       return null;
     default:
       return state;
