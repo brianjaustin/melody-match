@@ -1,6 +1,8 @@
 defmodule MelodyMatch.MatchesTest do
   use MelodyMatch.DataCase
 
+  import Ecto.Query, warn: false
+
   alias MelodyMatch.Accounts
   alias MelodyMatch.Matches
   alias MelodyMatch.Repo
@@ -66,6 +68,23 @@ defmodule MelodyMatch.MatchesTest do
 
     test "get_matches_by_user_id/1 returns nothing if no matches exist" do
       assert Matches.get_matches_by_user_id(1) == []
+    end
+
+    test "get_user_recent_matches/2 returns recent match" do
+      match = match_fixture() |> Repo.preload(:first_user)
+      matches = Matches.get_user_recent_matches(match.first_user.id)
+      assert Enum.count(matches) == 1
+      assert Enum.at(matches, 0).id == match.id
+    end
+
+    test "get_user_recent_matches/2 does not return old match" do
+      match = match_fixture() |> Repo.preload(:first_user)
+      match_id = match.id
+      Match
+      |> where(id: ^match_id)
+      |> Repo.update_all(set: [updated_at: ~N[2020-04-07 20:14:48.536394]])
+
+      assert Matches.get_user_recent_matches(match.first_user_id) == []
     end
 
     test "create_match/1 with valid data creates a match" do

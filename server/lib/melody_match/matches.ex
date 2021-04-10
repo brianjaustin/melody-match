@@ -47,6 +47,21 @@ defmodule MelodyMatch.Matches do
   end
 
   @doc """
+  Gets a list of matches by user id where the match occured
+  `delta_hours` (default = 24) ago.
+  """
+  def get_user_recent_matches(user_id, delta_hours \\ 24) do
+    cutoff = DateTime.utc_now()
+    |> DateTime.add(-1 * delta_hours * 60 * 60)
+    |> DateTime.to_naive()
+
+    query = from m in Match,
+      where: (m.first_user_id == ^user_id or m.second_user_id == ^user_id) \
+      and m.updated_at > ^cutoff
+    Repo.all(query)
+  end
+
+  @doc """
   Creates a match.
 
   ## Examples

@@ -38,5 +38,5 @@ defmodule MelodyMatch.Matchmaker.MatcherBase do
   matches. What this means (and the matching threshold) depends on
   specific implementations.
   """
-  @callback best_match(matching_params, available_matches) :: integer | nil
+  @callback best_match([integer], matching_params, available_matches) :: integer | nil
 end
