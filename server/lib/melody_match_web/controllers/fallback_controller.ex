@@ -23,7 +23,6 @@ defmodule MelodyMatchWeb.FallbackController do
   end
 
   def call(conn, response) do
-    IO.inspect response
     conn
     |> put_status(:not_found)
     |> put_view(MelodyMatchWeb.ErrorView)

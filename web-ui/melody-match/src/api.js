@@ -1,5 +1,8 @@
 import store from "./store";
-import * as $ from "jquery";
+
+// Uncomment for local dev
+// const server_url = "http://localhost:4000/api/v1";
+const server_url = "https://melody-match.baustin-neu.site/api/v1";
 
 export async function api_get(path, token=null) {
   let opts = {
@@ -9,7 +12,7 @@ export async function api_get(path, token=null) {
       "x-auth": token
     }
   };
-  let text = await fetch("http://localhost:4000/api/v1" + path, opts);
+  let text = await fetch(server_url + path, opts);
   let resp = await text.json();
   return resp.data;
 }
@@ -23,7 +26,7 @@ export async function api_post(path, data, token=null) {
     },
     body: JSON.stringify(data),
   };
-  let resp = await fetch("http://localhost:4000/api/v1" + path, opts);
+  let resp = await fetch(server_url + path, opts);
   return await resp.json();
 }
 
@@ -36,7 +39,7 @@ export async function api_patch(path, data, token=null) {
     },
     body: JSON.stringify(data),
   };
-  let resp = await fetch("http://localhost:4000/api/v1" + path, opts);
+  let resp = await fetch(server_url + path, opts);
   return await resp.json();
 }
 

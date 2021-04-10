@@ -6,7 +6,9 @@ import { api_patch } from "../api";
 
 export const authEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = "135bad1f37bc489b95aa2c2d2e7fd4c6";
-const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
+// Uncomment for local dev
+// const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
+const redirectUri = "https%3A%2F%2Fmelody-match.baustin-neu.site"
 const scopes = ["user-top-read"];
 
 function EditUser({ session, users }) {
@@ -42,7 +44,6 @@ function EditUser({ session, users }) {
     }
 
     if (password == confirmPassword) {
-        console.log(session.token)
       api_patch(
         `/users/${session.user_id}`,
         {
@@ -59,7 +60,6 @@ function EditUser({ session, users }) {
             </Alert>
           );
 
-          console.log(position.coords);
           api_login(
             email,
             password,

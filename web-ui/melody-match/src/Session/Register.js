@@ -8,7 +8,9 @@ export const authEndpoint = "https://accounts.spotify.com/authorize";
 // Replace with your app's client ID, redirect URI and desired scopes
 // const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientId = "135bad1f37bc489b95aa2c2d2e7fd4c6";
-const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
+// Uncomment for local dev
+// const redirectUri = "http%3A%2F%2Flocalhost%3A3000";
+const redirectUri = "https%3A%2F%2Fmelody-match.baustin-neu.site"
 const scopes = ["user-top-read"];
 
 
@@ -54,7 +56,7 @@ function Register({spotifyToken}) {
           );
           api_post(`/users/${data.data.id}/spotify_token`, {
             auth_code: spotifyToken,
-            redirect_uri: "http://localhost:3000",
+            redirect_uri: "https://melody-match.baustin-neu.site",
           }).then((data) => {
               setAlert(
                 <Alert key="registration_response" variant="success">

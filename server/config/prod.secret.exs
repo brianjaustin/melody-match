@@ -51,7 +51,7 @@ config :melody_match, MelodyMatchWeb.Endpoint,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-#     config :melody_match, MelodyMatchWeb.Endpoint, server: true
+config :melody_match, MelodyMatchWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
