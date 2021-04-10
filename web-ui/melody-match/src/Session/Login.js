@@ -29,6 +29,10 @@ export default function Login() {
         {redirect}
         <Row>
           <h2>Login</h2>
+          <p>
+            Please accept Location permissions when submitting in order to
+            proceed.
+          </p>
         </Row>
         <Form onSubmit={handleSubmit}>
           <Form.Row>
