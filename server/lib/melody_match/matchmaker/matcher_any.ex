@@ -7,10 +7,10 @@ defmodule MelodyMatch.Matchmaker.MatcherAny do
   @behaviour MelodyMatch.Matchmaker.MatcherBase
 
   @impl true
-  def best_match(_user, pool) when map_size(pool) == 0, do: nil
+  def best_match(_, _, pool) when map_size(pool) == 0, do: nil
 
   @impl true
-  def best_match(_user, pool) do
+  def best_match(_, _, pool) do
     pool
     |> Map.keys()
     |> Enum.random()
