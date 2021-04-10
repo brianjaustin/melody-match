@@ -46,7 +46,7 @@ function App({session}) {
         if (session){
           api_post(`/users/${session.user_id}/spotify_token`, {
             auth_code: _token,
-            redirect_uri: "http://localhost:3000",
+            redirect_uri: "https://melody-match.baustin-neu.site",
           },
           session.token);
         }
