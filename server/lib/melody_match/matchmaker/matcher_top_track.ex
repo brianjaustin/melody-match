@@ -6,7 +6,7 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
 
   @behaviour MelodyMatch.Matchmaker.MatcherBase
 
-  @maximum_diff 350
+  @maximum_diff 50
   @max_location_meters 500_000
 
   @impl true
@@ -38,7 +38,7 @@ defmodule MelodyMatch.Matchmaker.MatcherTopTrack do
       + instrumentalness_diff + liveness_diff + loudness_diff + speechiness_diff \
       + valence_diff + tempo_diff) / 9
 
-    abs(diff_raw) * 1000
+    abs(diff_raw)
   end
 
   defp close_enough(%{latitude: nil, longitude: nil}, %{latitude: nil, longitude: nil}) do
